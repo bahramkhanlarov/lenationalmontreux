@@ -1,9 +1,3 @@
-/**
- * Cloudflare Pages Function: create-checkout
- * Creates a Payrexx Gateway for apartment booking.
- * Environment variables: PAYREXX_INSTANCE, PAYREXX_API_SECRET
- */
-
 function formatDateReadable(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
@@ -16,39 +10,37 @@ function buildQueryString(params) {
     .join('&');
 }
 
-export async function onRequest(context) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
 
-  if (context.request.method === 'OPTIONS') {
+export async function handleCreateCheckout(request, env) {
+  if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (context.request.method !== 'POST') {
+  if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
-  const instance  = context.env.PAYREXX_INSTANCE;
-  const apiKey    = context.env.PAYREXX_API_SECRET;
-  const siteUrl   = 'https://lenationalmontreux.ch';
+  const instance = env.PAYREXX_INSTANCE;
+  const apiKey   = env.PAYREXX_API_SECRET;
+  const siteUrl  = 'https://lenationalmontreux.ch';
 
   if (!instance || !apiKey) {
     return new Response(JSON.stringify({ error: 'Payrexx not configured.' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
   let body;
   try {
-    body = await context.request.json();
+    body = await request.json();
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
@@ -56,8 +48,7 @@ export async function onRequest(context) {
 
   if (!checkIn || !checkOut || !nights || !totalAmount || !guestEmail) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
@@ -87,10 +78,7 @@ export async function onRequest(context) {
       `https://api.payrexx.com/v1.14/Gateway/?instance=${encodeURIComponent(instance)}`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-API-KEY': apiKey,
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-API-KEY': apiKey },
         body: buildQueryString(params),
       }
     );
@@ -99,8 +87,7 @@ export async function onRequest(context) {
 
     if (result.status !== 'success' || !result.data?.[0]) {
       return new Response(JSON.stringify({ error: result.message || 'Payrexx gateway creation failed' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
@@ -109,8 +96,12 @@ export async function onRequest(context) {
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
+}
+
+// Cloudflare Pages Functions compat
+export async function onRequest(context) {
+  return handleCreateCheckout(context.request, context.env);
 }

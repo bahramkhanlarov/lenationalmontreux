@@ -1,9 +1,3 @@
-/**
- * Cloudflare Pages Function: get-calendar
- * Fetches the Airbnb iCal and returns blocked dates as JSON.
- * Environment variable: AIRBNB_ICAL_URL
- */
-
 function parseBlockedDates(ical) {
   const blocked = new Set();
   const events = ical.split('BEGIN:VEVENT');
@@ -34,18 +28,18 @@ function parseBlockedDates(ical) {
   return Array.from(blocked).sort();
 }
 
-export async function onRequest(context) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
 
-  if (context.request.method === 'OPTIONS') {
+export async function handleGetCalendar(request, env) {
+  if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const icalUrl = context.env.AIRBNB_ICAL_URL;
+  const icalUrl = env.AIRBNB_ICAL_URL;
 
   if (!icalUrl) {
     return new Response(JSON.stringify({ blockedDates: [], warning: 'AIRBNB_ICAL_URL not configured' }), {
@@ -60,11 +54,7 @@ export async function onRequest(context) {
     const blockedDates = parseBlockedDates(ical);
 
     return new Response(JSON.stringify({ blockedDates }), {
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600',
-      }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to fetch calendar', detail: err.message }), {
@@ -72,4 +62,9 @@ export async function onRequest(context) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
+}
+
+// Cloudflare Pages Functions compat
+export async function onRequest(context) {
+  return handleGetCalendar(context.request, context.env);
 }
