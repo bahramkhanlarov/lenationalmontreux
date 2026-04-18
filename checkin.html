@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le National de Montreux — Guest Check-in</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #b8960c;
+    --gold-light: #d4af37;
+    --dark: #1a1a2e;
+    --bg: #f8f6f0;
+    --card-bg: #ffffff;
+    --border: #e0ddd4;
+    --text: #2c2c2c;
+    --text-light: #666;
+    --accent-blue: #2d5a8e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+    color: white;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border-bottom: 4px solid var(--gold);
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .header .gold { color: var(--gold-light); }
+
+  .header p {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .progress-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--border);
+    color: var(--text-light);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .progress-step.active {
+    background: var(--gold);
+    color: white;
+    font-weight: 600;
+  }
+
+  .progress-step.done {
+    background: #27ae60;
+    color: white;
+  }
+
+  .progress-step .num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.3);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .section {
+    display: none;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .section.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    color: var(--dark);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-title .icon { font-size: 1.4rem; }
+
+  /* Form styles */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-group label {
+    font-size: 0.8rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+
+  .form-group input, .form-group select {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: #fafaf8;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,150,12,0.1);
+  }
+
+  /* Rules display */
+  .rules-content {
+    background: #fdfcf8;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .rules-content h3 {
+    color: var(--dark);
+    margin: 1.2rem 0 0.5rem;
+    font-size: 1rem;
+  }
+
+  .rules-content h3:first-child { margin-top: 0; }
+
+  .rules-content p { margin-bottom: 0.6rem; }
+
+  .rules-content .article {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .rules-content .article-num {
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 35px;
+  }
+
+  .rules-content .sub-item {
+    padding-left: 2.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .acknowledge-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    background: #f0f7ff;
+    border: 1px solid #c4d9f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+  }
+
+  .acknowledge-box input[type="checkbox"] {
+    width: 20px; height: 20px;
+    margin-top: 2px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .acknowledge-box label {
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  /* Signature pad */
+  .sig-section {
+    margin-top: 1.5rem;
+  }
+
+  .sig-label {
+    font-size: 0.85rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .sig-wrapper {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: white;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .sig-wrapper:hover, .sig-wrapper.signing {
+    border-color: var(--gold);
+  }
+
+  .sig-wrapper canvas {
+    display: block;
+    width: 100%;
+    height: 120px;
+    cursor: crosshair;
+  }
+
+  .sig-placeholder {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ccc;
+    font-style: italic;
+    pointer-events: none;
+    font-size: 0.9rem;
+    transition: opacity 0.3s;
+  }
+
+  .sig-wrapper.has-sig .sig-placeholder { opacity: 0; }
+
+  .sig-clear {
+    position: absolute;
+    top: 6px; right: 8px;
+    background: rgba(0,0,0,0.05);
+    border: none;
+    border-radius: 4px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--text-light);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .sig-clear:hover { background: rgba(0,0,0,0.1); }
+
+  /* Date field next to signature */
+  .sig-date-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    margin-top: 1rem;
+  }
+
+  .sig-date-row .form-group { flex: 0 0 200px; }
+  .sig-date-row .sig-section { flex: 1; margin-top: 0; }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+
+  .btn-secondary {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover { background: #d0cdc4; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(184,150,12,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(184,150,12,0.4);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(39,174,96,0.3);
+  }
+
+  .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+  }
+
+  .btn-success:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Completion */
+  .completion {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .completion .check-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: #27ae60;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: white;
+  }
+
+  .completion h2 { color: var(--dark); margin-bottom: 0.5rem; }
+  .completion p { color: var(--text-light); font-size: 0.95rem; }
+
+  .error-msg {
+    color: #c0392b;
+    font-size: 0.85rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin-top: 0.3rem;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.4rem; letter-spacing: 1px; }
+    .section { padding: 1.2rem; }
+    .btn-row { flex-direction: column; }
+    .sig-date-row { flex-direction: column; }
+    .sig-date-row .form-group { flex: auto; }
+    .progress-step span:not(.num) { display: none; }
+  }
+
+  /* Download buttons */
+  .download-bar {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    background: #f5f3ee;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .download-bar .dl-label {
+    font-size: 0.8rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-light);
+    margin-right: 0.3rem;
+  }
+
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-download.en {
+    background: #1a1a2e;
+    color: white;
+  }
+
+  .btn-download.fr {
+    background: var(--gold);
+    color: white;
+  }
+
+  .btn-download:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  /* Video welcome screen */
+  .welcome-screen {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .welcome-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .welcome-intro h2 {
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .welcome-intro p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .video-card {
+    background: #fafaf8;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .video-card iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: block;
+    border: none;
+  }
+
+  .video-card .video-label {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 600;
+    color: var(--text-light);
+    text-align: center;
+    background: #f0efe8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .start-btn-row {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(184,150,12,0.35);
+    transition: all 0.2s;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184,150,12,0.45);
+  }
+
+  @media (max-width: 700px) {
+    .videos-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Print summary styles */
+  .print-summary-content {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .print-summary-content h2 {
+    text-align: center;
+    color: var(--dark);
+    border-bottom: 3px solid var(--gold);
+    padding-bottom: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .print-summary-content h2 small {
+    display: block;
+    font-size: 0.55em;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+
+  .print-summary-content h3 {
+    color: var(--dark);
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-top: 2rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+  }
+
+  .summary-field {
+    display: flex;
+    gap: 10px;
+    margin: 6px 0;
+    font-size: 0.92rem;
+  }
+
+  .summary-field .sf-label {
+    font-weight: bold;
+    min-width: 140px;
+    color: #666;
+  }
+
+  .summary-sig-img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 10px 0;
+    max-width: 300px;
+    height: 80px;
+    object-fit: contain;
+    background: #fafafa;
+  }
+
+  .summary-timestamp {
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+
+  .print-btn-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  @media print {
+    .header, .progress-bar, .btn, .btn-row, .print-btn-row,
+    #completion-msg, .sig-clear, .acknowledge-box { display: none !important; }
+    .section { display: none !important; }
+    #step-4 { display: block !important; }
+    #print-summary { display: block !important; }
+    .print-summary-content { border: none; padding: 0; box-shadow: none; }
+    body { background: white; }
+    .container { max-width: 100%; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="gold">Le National</span> de Montreux</h1>
+  <p>Guest Check-in &amp; Document Signing</p>
+</div>
+
+<div class="container">
+
+  <!-- WELCOME / VIDEOS SCREEN -->
+  <div class="welcome-screen" id="welcome-screen">
+    <div class="welcome-intro">
+      <h2>Welcome to <span style="color:var(--gold)">Le National</span> de Montreux</h2>
+      <p>These short guides will walk you through everything you need to know before your arrival — how to reach the apartment from Montreux train station, how to collect your room keys, and how to access the private garage and Spa &amp; Wellness centre. Please watch all three videos before proceeding to sign your documents.</p>
+    </div>
+
+    <div class="videos-grid">
+      <div class="video-card">
+        <iframe src="https://drive.google.com/file/d/1AfstBP8sPrbg8yud4uloHQmQY-YiNTBQ/preview" allow="autoplay" allowfullscreen></iframe>
+        <div class="video-label">▶ Check-in Guide — Part 1</div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://drive.google.com/file/d/1PV4rPcbdpGEkVTKt37EjuJ1AKKX4vBTn/preview" allow="autoplay" allowfullscreen></iframe>
+        <div class="video-label">▶ Check-in Guide — Part 2</div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://drive.google.com/file/d/1I9VD3QIUA8Q5GJAwqbyrRYtoEezo-HLo/preview" allow="autoplay" allowfullscreen></iframe>
+        <div class="video-label">▶ Check-in Guide — Part 3</div>
+      </div>
+    </div>
+
+    <div class="start-btn-row">
+      <button class="btn-start" onclick="startCheckin()">Proceed to Check-in Documents →</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR (hidden until check-in starts) -->
+  <div class="progress-bar" id="progress-bar" style="display:none;">
+    <div class="progress-step active" onclick="goToStep(1)" id="step-ind-1">
+      <span class="num">1</span> <span>Registration</span>
+    </div>
+    <div class="progress-step" onclick="goToStep(2)" id="step-ind-2">
+      <span class="num">2</span> <span>Building Rules</span>
+    </div>
+    <div class="progress-step" onclick="goToStep(3)" id="step-ind-3">
+      <span class="num">3</span> <span>Wellness &amp; SPA</span>
+    </div>
+    <div class="progress-step" onclick="goToStep(4)" id="step-ind-4">
+      <span class="num">4</span> <span>Complete</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Registration Form -->
+  <div class="section" id="step-1">
+    <div class="section-title">
+      <span class="icon">📋</span> Record of Arrival / Meldeschein / Bulletin d'enregistrement
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Apartment</label>
+        <input type="text" id="reg-apt" value="Apt. AR3-1" readonly style="background:#f0efe8; color:#666; cursor:default;">
+      </div>
+      <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+        <div class="form-group">
+          <label>Arrival</label>
+          <input type="date" id="reg-arrival">
+        </div>
+        <div class="form-group">
+          <label>Departure</label>
+          <input type="date" id="reg-departure">
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Surname, First Name / Nom, Prénom</label>
+        <input type="text" id="reg-name" placeholder="Full name">
+      </div>
+      <div class="form-group full">
+        <label>Street, Number / Rue, Numéro</label>
+        <input type="text" id="reg-street" placeholder="Street address">
+      </div>
+      <div class="form-group">
+        <label>ZIP, City / NPA, Localité</label>
+        <input type="text" id="reg-city" placeholder="e.g. 1820 Montreux">
+      </div>
+      <div class="form-group">
+        <label>Passport Nr / N° de passeport</label>
+        <input type="text" id="reg-passport" placeholder="Passport number">
+      </div>
+      <div class="form-group">
+        <label>Date of Birth / Date de naissance</label>
+        <input type="date" id="reg-dob">
+      </div>
+      <div class="form-group">
+        <label>Nationality / Nationalité</label>
+        <input type="text" id="reg-nationality" placeholder="Nationality">
+      </div>
+      <div class="form-group">
+        <label>Adults (16+)</label>
+        <input type="number" id="reg-adults" min="1" max="20" value="1">
+      </div>
+      <div class="form-group">
+        <label>Children (0-15)</label>
+        <input type="number" id="reg-kids" min="0" max="20" value="0">
+      </div>
+      <div class="form-group full">
+        <label>E-Mail</label>
+        <input type="email" id="reg-email" placeholder="guest@email.com">
+      </div>
+    </div>
+
+    <div class="sig-section">
+      <div class="sig-label">Signature / Unterschrift</div>
+      <div class="sig-wrapper" id="sig-wrap-1">
+        <canvas id="sig-1"></canvas>
+        <span class="sig-placeholder">Sign here with your mouse or finger</span>
+        <button class="sig-clear" onclick="clearSig(1)">Clear</button>
+      </div>
+      <div class="error-msg" id="err-sig-1">Please provide your signature to continue.</div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn btn-primary" onclick="nextStep(1)">Continue to Building Rules →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Building Rules -->
+  <div class="section" id="step-2">
+    <div class="section-title">
+      <span class="icon">🏛️</span> Règlement d'administration et d'utilisation — Building Rules
+    </div>
+
+    <div class="download-bar">
+      <span class="dl-label">📄 Full Document:</span>
+      <a class="btn-download en" href="Building Rules - English.pdf" download>⬇ English</a>
+      <a class="btn-download fr" href="Building Rules - French.pdf" download>⬇ Français</a>
+      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;">Download to read the complete 21-page document</span>
+    </div>
+
+    <div class="rules-content">
+      <h3>PROPRIÉTÉ PAR ÉTAGES — «&nbsp;LE NATIONAL&nbsp;»</h3>
+      <p><em>Règlement d'administration et d'utilisation</em></p>
+
+      <h3>Chapitre I — Généralités</h3>
+      <p>Est érigée sur la parcelle 5184 de la Commune de Montreux une propriété par étages constituée d'une part des bâtiments historiques, entièrement rénovés, du National de Montreux, construits à la fin du XIX<sup>ème</sup> siècle, soit l'Hôtel et Les Arcades. Sont aussi érigés sur cette parcelle quatre nouveaux bâtiments et un parking souterrain.</p>
+      <p><strong>Article 1 – Désignation:</strong> Parcelle n° 5184, Commune: Montreux, Surface: 8'119 m²<br>Adresse: Chemin du National 1/2, A Bon-Port, Avenue du Casino 10/12/14</p>
+      <p><strong>Article 2 – Normes applicables:</strong> La propriété par étages Le National est régie par son acte constitutif du 16 mai 2007.</p>
+      <p><strong>Article 3 – Force obligatoire:</strong> Ce règlement est mentionné au registre foncier et a force obligatoire pour tous les propriétaires d'étages, leurs ayants droit ainsi que pour les usufruitiers ou les titulaires d'un droit d'habitation.</p>
+
+      <h3>Chapitre IV — Droits et obligations</h3>
+      <p><strong>Article 8 – Responsabilité:</strong> Chaque propriétaire d'étages est tenu de se conformer aux dispositions légales et aux dispositions du présent règlement.</p>
+      <p><strong>Article 10a – Locations:</strong></p>
+      <p>A. Il est admis que les copropriétaires puissent louer leur appartement directement ou à travers une agence.</p>
+      <p>B. Tous les appartements loués doivent avoir reçu l'autorisation de la police du commerce.</p>
+      <p>C. Toute location doit être annoncée à l'administrateur, par email au plus tard à l'arrivée des locataires, par l'envoi d'une fiche de police accompagnée du règlement de la PPE et du règlement d'utilisation du Spa signés par les locataires. En cas de manquement, une amende de Fr. 100.- par cas sera adressée.</p>
+      <p>D. Durée de location minimum de 3 nuits.</p>
+
+      <h3>Chapitre IV-B — Parties privées</h3>
+      <p><strong>Article 11 – Utilisation des lots:</strong> Chaque propriétaire est libre d'utiliser ses locaux comme il l'entend, dans la mesure où il ne porte atteinte ni aux droits des autres propriétaires.</p>
+      <p><strong>Article 17 – Fenêtres et balcons:</strong> Il ne peut être ni étendu du linge, ni posé des objets à l'appui des fenêtres et des balcons. Il est interdit de jeter quoi que ce soit par les fenêtres ou les balcons.</p>
+      <p><strong>Article 21 – Bruits, trépidations, odeurs et fumée:</strong> Tout tapage troublant la tranquillité des occupants est formellement interdit.</p>
+      <p><strong>Article 22 – Animaux:</strong> La détention de chiens, chats et autres animaux est tolérée à condition qu'ils ne gênent pas les autres propriétaires. Ils doivent être tenus en laisse à l'extérieur des lots.</p>
+
+      <h3>Chapitre IV-C — Parties communes</h3>
+      <p><strong>Article 23 – Utilisation:</strong> Chaque propriétaire use des parties communes suivant leur destination propre, mais dans une mesure compatible avec les droits des autres propriétaires.</p>
+      <p><strong>Article 24 – Dispositions particulières:</strong> Aucun propriétaire ne doit encombrer les parties communes (hall d'entrée, escaliers, paliers, couloirs des caves).</p>
+
+      <h3>Chapitre VII — Divers</h3>
+      <p><strong>Article 55 – Sanctions:</strong> En cas de violation du règlement, l'administrateur est autorisé à prendre les sanctions suivantes: a) appel à l'ordre oral; b) avertissement écrit; c) interdiction de l'utilisation de certaines parties communes.</p>
+      <p><strong>Article 57 – Adoption et entrée en vigueur:</strong> Ce règlement a été adopté par une décision unanime des propriétaires d'étages et entre en vigueur dès la constitution de la propriété par étages (acte constitutif du 16 mai 2007, modifié les 7 juin et 24 juillet 2007).</p>
+      <p style="text-align:center; margin-top:1rem; color:#999; font-style:italic;">— This is a summary of key articles. The full 21-page document has been provided separately. —</p>
+    </div>
+
+    <div class="acknowledge-box" onclick="toggleCheck(event, 'ack-building')">
+      <input type="checkbox" id="ack-building">
+      <label for="ack-building" onclick="event.stopPropagation()">I confirm that I have read and understood the Building Rules (Règlement d'administration et d'utilisation) of the co-ownership Le National de Montreux and I agree to comply with all its provisions during my stay.</label>
+    </div>
+    <div class="error-msg" id="err-ack-building">Please confirm that you have read the building rules.</div>
+
+    <div class="sig-date-row">
+      <div class="form-group">
+        <label>Lieu et date</label>
+        <input type="text" id="building-date" placeholder="Montreux, 29.03.2026">
+      </div>
+      <div class="sig-section">
+        <div class="sig-label">Signature</div>
+        <div class="sig-wrapper" id="sig-wrap-2">
+          <canvas id="sig-2"></canvas>
+          <span class="sig-placeholder">Sign here</span>
+          <button class="sig-clear" onclick="clearSig(2)">Clear</button>
+        </div>
+        <div class="error-msg" id="err-sig-2">Please provide your signature.</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(2)">Continue to Wellness Rules →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Wellness & SPA -->
+  <div class="section" id="step-3">
+    <div class="section-title">
+      <span class="icon">🏊</span> Règlement — Wellness &amp; SPA Facility Rules
+    </div>
+
+    <div class="download-bar">
+      <span class="dl-label">📄 Full Document:</span>
+      <a class="btn-download en" href="Wellness & SPA Rules - English.pdf" download>⬇ English</a>
+      <a class="btn-download fr" href="Wellness & SPA Rules - French.pdf" download>⬇ Français</a>
+      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;">Download to read the complete document</span>
+    </div>
+
+    <div class="rules-content">
+      <h3>MONTREUX — «&nbsp;LE NATIONAL&nbsp;»</h3>
+      <p><em>Règlement d'utilisation de l'Espace Fitness / Piscine / Wellness</em></p>
+
+      <div class="article"><span class="article-num">I.</span><div>La piscine est une propriété privée réservée aux propriétaires et aux locataires résidant dans les appartements de la copropriété Le National à Montreux, exclusivement, lesquels utilisent les installations à leurs propres risques.<br><br>Une tolérance peut néanmoins être observée dans le sens que les habitants ont la possibilité d'inviter deux personnes au maximum, pour autant que ces dernières soient accompagnées du propriétaire ou du locataire résidant dans le domaine.<br><br>Toutefois, l'administration se réserve le droit de supprimer momentanément cette facilité en cas d'affluence.</div></div>
+
+      <div class="article"><span class="article-num">II.</span><div>Les personnes utilisant la piscine sont tenues, à la demande de l'administration, de justifier leur droit d'accéder au Wellness.</div></div>
+
+      <div class="article"><span class="article-num">III.</span><div>Le centre Wellness est ouvert de <strong>7h00 à 22h00</strong>. Les habitants devront respecter le travail d'entretien des locaux et s'abstenir de les utiliser en période de nettoyage.</div></div>
+
+      <div class="article"><span class="article-num">IV.</span><div>L'administration décline toute responsabilité quant aux accidents résultant de l'utilisation des équipements du Wellness. Elle n'exerce aucune surveillance des installations, les usagers les utilisant à leurs risques et périls.<br><br><strong>L'accès n'est pas autorisé aux enfants de moins de 12 ans</strong> non accompagnés d'un adulte. Le jacuzzi n'est pas autorisé aux bébés.<br><br>Les parents doivent répondre de la conduite de leurs enfants ainsi que des dégâts et accidents causés par ces derniers.</div></div>
+
+      <div class="article"><span class="article-num">V.</span><div>L'ordre, la décence et la propreté doivent régner. Le <strong>port d'un maillot de bain est obligatoire</strong> pour l'utilisation de l'ensemble des installations du secteur humide.</div></div>
+
+      <div class="article"><span class="article-num">VI.</span><div>Les usagers de la salle de fitness ont l'obligation de changer de chaussures dans les vestiaires. L'accès à l'espace humide n'est autorisé qu'à pieds nus ou en sandales de spa.</div></div>
+
+      <div class="article"><span class="article-num">VII.</span><div><strong>Il est formellement interdit :</strong>
+        <div class="sub-item">a) Aux personnes atteintes de maladie de la peau ou contagieuse de fréquenter la zone humide.</div>
+        <div class="sub-item">b) De jeter du papier ou des détritus dans la piscine ou le Wellness.</div>
+        <div class="sub-item">c) De fumer dans l'enceinte du Wellness.</div>
+        <div class="sub-item">d) De plonger ou sauter dans la piscine de manière à importuner les autres usagers.</div>
+        <div class="sub-item">e) De dégrader ou salir les installations, créer du désordre, perturber par des cris ou bruits intempestifs.</div>
+        <div class="sub-item">f) De pique-niquer ou consommer des boissons alcoolisées.</div>
+        <div class="sub-item">g) De jouer au ballon dans le bassin ou d'y introduire des objets de jeux.</div>
+        <div class="sub-item">h) D'utiliser des transistors, lecteurs de musique ou tout moyen d'émission de bruit.</div>
+        <div class="sub-item">i) D'emporter les clés des casiers en-dehors de l'espace Wellness.</div>
+        <br>Tout comportement inadéquat fera l'objet d'un avertissement. En cas de récidive, une <strong>amende de Fr. 100.-</strong> sera adressée.</div></div>
+
+      <div class="article"><span class="article-num">VIII.</span><div>Maximum de <strong>20 personnes</strong> autorisé de manière simultanée.</div></div>
+
+      <div class="article"><span class="article-num">IX.</span><div>L'accès au Wellness est <strong>strictement interdit aux chiens et à tous les animaux</strong>.</div></div>
+
+      <div class="article"><span class="article-num">X.</span><div>Toute personne fréquentant le Wellness est tenue de se conformer strictement au présent règlement.</div></div>
+
+      <div class="article"><span class="article-num">XI.</span><div>En cas d'usage abusif des installations ou alarmes, les contrevenants pourront être exclus du Wellness.</div></div>
+
+      <div class="article"><span class="article-num">XII.</span><div>L'administration et le responsable du service d'immeuble ont autorité pour en exiger l'application sévère.</div></div>
+
+      <div class="article"><span class="article-num">XIII.</span><div>L'administration peut en tout temps prendre les mesures qui s'imposent et peut interdire l'usage des aménagements aux propriétaires et locataires qui ne respecteraient pas le présent règlement.</div></div>
+    </div>
+
+    <div class="acknowledge-box" onclick="toggleCheck(event, 'ack-wellness')">
+      <input type="checkbox" id="ack-wellness">
+      <label for="ack-wellness" onclick="event.stopPropagation()">I confirm that I have read and understood the Wellness &amp; SPA Facility Rules and I agree to comply with all its provisions during my stay at Le National de Montreux.</label>
+    </div>
+    <div class="error-msg" id="err-ack-wellness">Please confirm that you have read the wellness rules.</div>
+
+    <div class="sig-date-row">
+      <div class="form-group">
+        <label>Lieu et date</label>
+        <input type="text" id="wellness-date" placeholder="Montreux, 29.03.2026">
+      </div>
+      <div class="sig-section">
+        <div class="sig-label">Signature du locataire</div>
+        <div class="sig-wrapper" id="sig-wrap-3">
+          <canvas id="sig-3"></canvas>
+          <span class="sig-placeholder">Sign here</span>
+          <button class="sig-clear" onclick="clearSig(3)">Clear</button>
+        </div>
+        <div class="error-msg" id="err-sig-3">Please provide your signature.</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
+      <button class="btn btn-success" onclick="nextStep(3)">✓ Complete Check-in</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Completion -->
+  <div class="section" id="step-4">
+    <div class="completion" id="completion-msg">
+      <div class="check-icon">✓</div>
+      <h2>Check-in Complete!</h2>
+      <p>Thank you. All documents have been signed successfully.</p>
+      <p style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="generatePDF()">📄 Download Signed PDF</button>
+      </p>
+      <p style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        The PDF will download to your browser's Downloads folder.
+      </p>
+      <p style="margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="showPrintSummary()">Or view summary on screen</button>
+      </p>
+    </div>
+    <div id="print-summary" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+  // ---- Welcome screen → start check-in ----
+  function startCheckin() {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('progress-bar').style.display = 'flex';
+    showStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { if (sigDrawing[1]) sigDrawing[1].resize(); }, 50);
+  }
+
+  // ---- Checkbox toggle (prevents double-toggle) ----
+  function toggleCheck(event, id) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'LABEL') return;
+    const cb = document.getElementById(id);
+    cb.checked = !cb.checked;
+  }
+
+  // ---- State ----
+  let currentStep = 1;
+  const totalSteps = 4;
+  const sigData = {};
+  const sigContexts = {};
+  const sigDrawing = {};
+
+  // ---- Signature Pad Logic ----
+  function initSignaturePad(id) {
+    const canvas = document.getElementById('sig-' + id);
+    const wrapper = document.getElementById('sig-wrap-' + id);
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.strokeStyle = '#1a1a2e';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    let drawing = false;
+    let lastX = 0, lastY = 0;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches ? e.touches[0] : e;
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      drawing = true;
+      wrapper.classList.add('signing', 'has-sig');
+      const pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+      sigData[id] = true;
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function stopDraw(e) {
+      if (e) e.preventDefault();
+      drawing = false;
+      wrapper.classList.remove('signing');
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDraw);
+
+    sigContexts[id] = ctx;
+    sigDrawing[id] = { canvas, wrapper, resize };
+  }
+
+  function clearSig(id) {
+    const { canvas, wrapper, resize } = sigDrawing[id];
+    resize();
+    wrapper.classList.remove('has-sig');
+    sigData[id] = false;
+  }
+
+  // ---- Navigation ----
+  function showStep(n) {
+    for (let i = 1; i <= totalSteps; i++) {
+      document.getElementById('step-' + i).classList.toggle('visible', i === n);
+      const ind = document.getElementById('step-ind-' + i);
+      ind.classList.remove('active', 'done');
+      if (i < n) ind.classList.add('done');
+      else if (i === n) ind.classList.add('active');
+    }
+    currentStep = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Re-initialize signature canvases after section becomes visible
+    setTimeout(() => {
+      if (n === 2 && sigDrawing[2]) sigDrawing[2].resize();
+      if (n === 3 && sigDrawing[3]) sigDrawing[3].resize();
+    }, 50);
+  }
+
+  function goToStep(n) {
+    if (n <= currentStep) showStep(n);
+  }
+
+  function validateStep(n) {
+    let valid = true;
+
+    if (n === 1) {
+      // Check registration signature
+      if (!sigData[1]) {
+        document.getElementById('err-sig-1').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('err-sig-1').classList.remove('show');
+      }
+    }
+
+    if (n === 2) {
+      if (!document.getElementById('ack-building').checked) {
+        document.getElementById('err-ack-building').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('err-ack-building').classList.remove('show');
+      }
+      if (!sigData[2]) {
+        document.getElementById('err-sig-2').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('err-sig-2').classList.remove('show');
+      }
+    }
+
+    if (n === 3) {
+      if (!document.getElementById('ack-wellness').checked) {
+        document.getElementById('err-ack-wellness').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('err-ack-wellness').classList.remove('show');
+      }
+      if (!sigData[3]) {
+        document.getElementById('err-sig-3').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('err-sig-3').classList.remove('show');
+      }
+    }
+
+    return valid;
+  }
+
+  function nextStep(n) {
+    if (!validateStep(n)) return;
+    showStep(n + 1);
+  }
+
+  function prevStep(n) {
+    showStep(n - 1);
+  }
+
+  // ---- Generate real PDF using jsPDF ----
+  function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+    const name = document.getElementById('reg-name').value || 'Guest';
+    const apt = document.getElementById('reg-apt').value || '';
+    const arrival = document.getElementById('reg-arrival').value || '';
+    const departure = document.getElementById('reg-departure').value || '';
+    const email = document.getElementById('reg-email').value || '';
+    const passport = document.getElementById('reg-passport').value || '';
+    const nationality = document.getElementById('reg-nationality').value || '';
+    const dob = document.getElementById('reg-dob').value || '';
+    const adults = document.getElementById('reg-adults').value || '1';
+    const kids = document.getElementById('reg-kids').value || '0';
+    const street = document.getElementById('reg-street').value || '';
+    const city = document.getElementById('reg-city').value || '';
+    const buildingDate = document.getElementById('building-date').value || '';
+    const wellnessDate = document.getElementById('wellness-date').value || '';
+
+    const sig1 = document.getElementById('sig-1').toDataURL('image/png');
+    const sig2 = document.getElementById('sig-2').toDataURL('image/png');
+    const sig3 = document.getElementById('sig-3').toDataURL('image/png');
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 50;
+    let y = margin;
+
+    function checkPage(space) {
+      if (y + space > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    }
+
+    function heading(text, size) {
+      checkPage(30);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(size);
+      doc.setTextColor(26, 26, 46);
+      doc.text(text, margin, y);
+      y += size * 0.4 + 10;
+      doc.setDrawColor(184, 150, 12);
+      doc.setLineWidth(1.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 15;
+    }
+
+    function field(label, value) {
+      checkPage(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(label + ':', margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(40, 40, 40);
+      doc.text(String(value || '—'), margin + 120, y);
+      y += 18;
+    }
+
+    function paragraph(text) {
+      checkPage(30);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 60);
+      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+      doc.text(lines, margin, y);
+      y += lines.length * 13 + 5;
+    }
+
+    function signature(imgData) {
+      checkPage(100);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Signature:', margin, y);
+      y += 6;
+      try {
+        doc.addImage(imgData, 'PNG', margin, y, 200, 70);
+      } catch (e) { console.error('Signature image error:', e); }
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.5);
+      doc.rect(margin, y, 200, 70);
+      y += 85;
+    }
+
+    // === TITLE ===
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(26, 26, 46);
+    doc.text('LE NATIONAL DE MONTREUX', pageWidth / 2, y, { align: 'center' });
+    y += 22;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(184, 150, 12);
+    doc.text('Guest Check-in Summary', pageWidth / 2, y, { align: 'center' });
+    y += 20;
+    doc.setDrawColor(184, 150, 12);
+    doc.setLineWidth(2);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 25;
+
+    // === SECTION 1 ===
+    heading('1. Registration / Meldeschein', 13);
+    field('Name', name);
+    field('Apartment', apt);
+    field('Arrival', arrival);
+    field('Departure', departure);
+    field('Address', `${street}, ${city}`);
+    field('Passport Nr', passport);
+    field('Date of Birth', dob);
+    field('Nationality', nationality);
+    field('Guests', `${adults} adults, ${kids} children`);
+    field('Email', email);
+    y += 8;
+    signature(sig1);
+
+    // === SECTION 2 ===
+    y += 10;
+    heading('2. Building Rules — Acknowledged & Signed', 13);
+    paragraph('The guest confirms having read and agreed to the Reglement d\'administration et d\'utilisation of Le National de Montreux.');
+    field('Lieu et date', buildingDate);
+    y += 4;
+    signature(sig2);
+
+    // === SECTION 3 ===
+    y += 10;
+    heading('3. Wellness & SPA Rules — Acknowledged & Signed', 13);
+    paragraph('The guest confirms having read and agreed to the Reglement d\'utilisation de l\'Espace Fitness/Piscine/Wellness.');
+    field('Lieu et date', wellnessDate);
+    y += 4;
+    signature(sig3);
+
+    // === FOOTER ===
+    y += 10;
+    checkPage(20);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Generated: ' + new Date().toLocaleString(), pageWidth / 2, y, { align: 'center' });
+
+    // === SAVE ===
+    const safeName = name.replace(/[^a-z0-9]/gi, '_');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    doc.save(`Check-in_${safeName}_${dateStr}.pdf`);
+  }
+
+  // ---- Print Summary ----
+  function showPrintSummary() {
+    const name = document.getElementById('reg-name').value || 'Guest';
+    const apt = document.getElementById('reg-apt').value || '';
+    const arrival = document.getElementById('reg-arrival').value || '';
+    const departure = document.getElementById('reg-departure').value || '';
+    const email = document.getElementById('reg-email').value || '';
+    const passport = document.getElementById('reg-passport').value || '';
+    const nationality = document.getElementById('reg-nationality').value || '';
+    const dob = document.getElementById('reg-dob').value || '';
+    const adults = document.getElementById('reg-adults').value || '1';
+    const kids = document.getElementById('reg-kids').value || '0';
+    const street = document.getElementById('reg-street').value || '';
+    const city = document.getElementById('reg-city').value || '';
+
+    const sig1 = document.getElementById('sig-1').toDataURL();
+    const sig2 = document.getElementById('sig-2').toDataURL();
+    const sig3 = document.getElementById('sig-3').toDataURL();
+
+    const buildingDate = document.getElementById('building-date').value || '';
+    const wellnessDate = document.getElementById('wellness-date').value || '';
+
+    const container = document.getElementById('print-summary');
+    container.style.display = 'block';
+    container.innerHTML = `
+      <div class="print-summary-content">
+        <h2>Le National de Montreux<small>Guest Check-in Summary</small></h2>
+
+        <h3>1. Registration / Meldeschein</h3>
+        <div class="summary-field"><span class="sf-label">Name:</span><span>${name}</span></div>
+        <div class="summary-field"><span class="sf-label">Apartment:</span><span>${apt}</span></div>
+        <div class="summary-field"><span class="sf-label">Arrival:</span><span>${arrival}</span></div>
+        <div class="summary-field"><span class="sf-label">Departure:</span><span>${departure}</span></div>
+        <div class="summary-field"><span class="sf-label">Address:</span><span>${street}, ${city}</span></div>
+        <div class="summary-field"><span class="sf-label">Passport Nr:</span><span>${passport}</span></div>
+        <div class="summary-field"><span class="sf-label">Date of Birth:</span><span>${dob}</span></div>
+        <div class="summary-field"><span class="sf-label">Nationality:</span><span>${nationality}</span></div>
+        <div class="summary-field"><span class="sf-label">Guests:</span><span>${adults} adults, ${kids} children</span></div>
+        <div class="summary-field"><span class="sf-label">Email:</span><span>${email}</span></div>
+        <div class="summary-field"><span class="sf-label">Signature:</span></div>
+        <img class="summary-sig-img" src="${sig1}">
+
+        <h3>2. Building Rules — Acknowledged &amp; Signed</h3>
+        <p>The guest confirms having read and agreed to the Règlement d'administration et d'utilisation of Le National de Montreux.</p>
+        <div class="summary-field"><span class="sf-label">Lieu et date:</span><span>${buildingDate}</span></div>
+        <div class="summary-field"><span class="sf-label">Signature:</span></div>
+        <img class="summary-sig-img" src="${sig2}">
+
+        <h3>3. Wellness &amp; SPA Rules — Acknowledged &amp; Signed</h3>
+        <p>The guest confirms having read and agreed to the Règlement d'utilisation de l'Espace Fitness/Piscine/Wellness.</p>
+        <div class="summary-field"><span class="sf-label">Lieu et date:</span><span>${wellnessDate}</span></div>
+        <div class="summary-field"><span class="sf-label">Signature:</span></div>
+        <img class="summary-sig-img" src="${sig3}">
+
+        <div class="summary-timestamp">Generated: ${new Date().toLocaleString()}</div>
+      </div>
+      <div class="print-btn-row">
+        <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('print-summary').style.display='none'">Close Summary</button>
+      </div>
+    `;
+
+    container.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ---- Auto-fill dates ----
+  function initDates() {
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById('reg-arrival').value = today;
+
+    const todayFormatted = new Date().toLocaleDateString('fr-CH');
+    document.getElementById('building-date').value = 'Montreux, le ' + todayFormatted;
+    document.getElementById('wellness-date').value = 'Montreux, le ' + todayFormatted;
+  }
+
+  // ---- Init ----
+  document.addEventListener('DOMContentLoaded', () => {
+    initSignaturePad(1);
+    initSignaturePad(2);
+    initSignaturePad(3);
+    initDates();
+  });
+</script>
+</body>
+</html>
