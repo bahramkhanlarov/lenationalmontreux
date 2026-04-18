@@ -668,9 +668,10 @@
         <p style="margin-top:20px;font-size:0.85rem;color:#999;">For urgent matters regarding an existing booking, please contact us directly by email.</p>
       </div>
       <div>
-        <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleContactSubmit(event)">
-          <input type="hidden" name="form-name" value="contact">
-          <input type="hidden" name="bot-field" style="display:none">
+        <form class="contact-form" onsubmit="handleContactSubmit(event)">
+          <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_KEY">
+          <input type="hidden" name="subject" value="New enquiry — Le National Montreux">
+          <input type="checkbox" name="botcheck" style="display:none">
           <input type="text" name="name" placeholder="Your name" required>
           <input type="email" name="email" placeholder="Your email address" required>
           <input type="text" name="subject" placeholder="Subject (e.g. Availability inquiry)">
@@ -1018,11 +1019,20 @@ async function handleContactSubmit(event) {
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
-  const data = new FormData(form);
+  const data = Object.fromEntries(new FormData(form));
   try {
-    await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data).toString() });
-    form.style.display = 'none';
-    document.getElementById('contactSuccess').style.display = 'block';
+    const resp = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await resp.json();
+    if (result.success) {
+      form.style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+    } else {
+      throw new Error(result.message);
+    }
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Send Message';
@@ -1032,7 +1042,7 @@ async function handleContactSubmit(event) {
 
 async function loadBlockedDates() {
   try {
-    const resp = await fetch('/.netlify/functions/get-calendar');
+    const resp = await fetch('/get-calendar');
     if (!resp.ok) return;
     const data = await resp.json();
     blockedDates = new Set(data.blockedDates || []);
@@ -1067,7 +1077,7 @@ async function handleBooking() {
   btn.textContent = 'Redirecting to payment…';
 
   try {
-    const resp = await fetch('/.netlify/functions/create-checkout', {
+    const resp = await fetch('/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
