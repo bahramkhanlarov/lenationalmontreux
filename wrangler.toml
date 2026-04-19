@@ -2,6 +2,11 @@ name = "lenationalmontreux"
 main = "worker.js"
 compatibility_date = "2024-09-23"
 
+routes = [
+  { pattern = "lenationalmontreux.ch", custom_domain = true },
+  { pattern = "www.lenationalmontreux.ch", custom_domain = true }
+]
+
 [assets]
 directory = "."
 not_found_handling = "single-page-application"
