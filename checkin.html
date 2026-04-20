@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Le National de Montreux — Guest Check-in</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-CkfHQMQ5NTbW6w9JFxvMiSJ/fE6N2c6EDV9gCBjt5b0MVWK7mP7JVzWO7KKQfqHMMUd2Bj18kaqQIQ5GFSHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   :root {
     --gold: #b8960c;
@@ -657,15 +657,15 @@
 
     <div class="videos-grid">
       <div class="video-card">
-        <iframe src="https://drive.google.com/file/d/1AfstBP8sPrbg8yud4uloHQmQY-YiNTBQ/preview" allow="autoplay" allowfullscreen></iframe>
+        <iframe src="https://drive.google.com/file/d/1AfstBP8sPrbg8yud4uloHQmQY-YiNTBQ/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
         <div class="video-label">▶ Check-in Guide — Part 1</div>
       </div>
       <div class="video-card">
-        <iframe src="https://drive.google.com/file/d/1PV4rPcbdpGEkVTKt37EjuJ1AKKX4vBTn/preview" allow="autoplay" allowfullscreen></iframe>
+        <iframe src="https://drive.google.com/file/d/1PV4rPcbdpGEkVTKt37EjuJ1AKKX4vBTn/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
         <div class="video-label">▶ Check-in Guide — Part 2</div>
       </div>
       <div class="video-card">
-        <iframe src="https://drive.google.com/file/d/1I9VD3QIUA8Q5GJAwqbyrRYtoEezo-HLo/preview" allow="autoplay" allowfullscreen></iframe>
+        <iframe src="https://drive.google.com/file/d/1I9VD3QIUA8Q5GJAwqbyrRYtoEezo-HLo/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
         <div class="video-label">▶ Check-in Guide — Part 3</div>
       </div>
     </div>
@@ -1294,43 +1294,100 @@
 
     const container = document.getElementById('print-summary');
     container.style.display = 'block';
-    container.innerHTML = `
-      <div class="print-summary-content">
-        <h2>Le National de Montreux<small>Guest Check-in Summary</small></h2>
+    container.innerHTML = '';
 
-        <h3>1. Registration / Meldeschein</h3>
-        <div class="summary-field"><span class="sf-label">Name:</span><span>${name}</span></div>
-        <div class="summary-field"><span class="sf-label">Apartment:</span><span>${apt}</span></div>
-        <div class="summary-field"><span class="sf-label">Arrival:</span><span>${arrival}</span></div>
-        <div class="summary-field"><span class="sf-label">Departure:</span><span>${departure}</span></div>
-        <div class="summary-field"><span class="sf-label">Address:</span><span>${street}, ${city}</span></div>
-        <div class="summary-field"><span class="sf-label">Passport Nr:</span><span>${passport}</span></div>
-        <div class="summary-field"><span class="sf-label">Date of Birth:</span><span>${dob}</span></div>
-        <div class="summary-field"><span class="sf-label">Nationality:</span><span>${nationality}</span></div>
-        <div class="summary-field"><span class="sf-label">Guests:</span><span>${adults} adults, ${kids} children</span></div>
-        <div class="summary-field"><span class="sf-label">Email:</span><span>${email}</span></div>
-        <div class="summary-field"><span class="sf-label">Signature:</span></div>
-        <img class="summary-sig-img" src="${sig1}">
+    function sf(label, value) {
+      const row = document.createElement('div');
+      row.className = 'summary-field';
+      const lbl = document.createElement('span');
+      lbl.className = 'sf-label';
+      lbl.textContent = label;
+      const val = document.createElement('span');
+      val.textContent = value;
+      row.appendChild(lbl);
+      row.appendChild(val);
+      return row;
+    }
 
-        <h3>2. Building Rules — Acknowledged &amp; Signed</h3>
-        <p>The guest confirms having read and agreed to the Règlement d'administration et d'utilisation of Le National de Montreux.</p>
-        <div class="summary-field"><span class="sf-label">Lieu et date:</span><span>${buildingDate}</span></div>
-        <div class="summary-field"><span class="sf-label">Signature:</span></div>
-        <img class="summary-sig-img" src="${sig2}">
+    function sigRow(label, src) {
+      const frag = document.createDocumentFragment();
+      const row = document.createElement('div');
+      row.className = 'summary-field';
+      const lbl = document.createElement('span');
+      lbl.className = 'sf-label';
+      lbl.textContent = label;
+      row.appendChild(lbl);
+      frag.appendChild(row);
+      const img = document.createElement('img');
+      img.className = 'summary-sig-img';
+      img.src = src;
+      frag.appendChild(img);
+      return frag;
+    }
 
-        <h3>3. Wellness &amp; SPA Rules — Acknowledged &amp; Signed</h3>
-        <p>The guest confirms having read and agreed to the Règlement d'utilisation de l'Espace Fitness/Piscine/Wellness.</p>
-        <div class="summary-field"><span class="sf-label">Lieu et date:</span><span>${wellnessDate}</span></div>
-        <div class="summary-field"><span class="sf-label">Signature:</span></div>
-        <img class="summary-sig-img" src="${sig3}">
+    const content = document.createElement('div');
+    content.className = 'print-summary-content';
 
-        <div class="summary-timestamp">Generated: ${new Date().toLocaleString()}</div>
-      </div>
-      <div class="print-btn-row">
-        <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('print-summary').style.display='none'">Close Summary</button>
-      </div>
-    `;
+    const title = document.createElement('h2');
+    title.textContent = 'Le National de Montreux';
+    const sub = document.createElement('small');
+    sub.textContent = 'Guest Check-in Summary';
+    title.appendChild(sub);
+    content.appendChild(title);
+
+    const h1 = document.createElement('h3');
+    h1.textContent = '1. Registration / Meldeschein';
+    content.appendChild(h1);
+    content.appendChild(sf('Name:', name));
+    content.appendChild(sf('Apartment:', apt));
+    content.appendChild(sf('Arrival:', arrival));
+    content.appendChild(sf('Departure:', departure));
+    content.appendChild(sf('Address:', `${street}, ${city}`));
+    content.appendChild(sf('Passport Nr:', passport));
+    content.appendChild(sf('Date of Birth:', dob));
+    content.appendChild(sf('Nationality:', nationality));
+    content.appendChild(sf('Guests:', `${adults} adults, ${kids} children`));
+    content.appendChild(sf('Email:', email));
+    content.appendChild(sigRow('Signature:', sig1));
+
+    const h2 = document.createElement('h3');
+    h2.textContent = '2. Building Rules — Acknowledged & Signed';
+    content.appendChild(h2);
+    const p2 = document.createElement('p');
+    p2.textContent = "The guest confirms having read and agreed to the Règlement d'administration et d'utilisation of Le National de Montreux.";
+    content.appendChild(p2);
+    content.appendChild(sf('Lieu et date:', buildingDate));
+    content.appendChild(sigRow('Signature:', sig2));
+
+    const h3 = document.createElement('h3');
+    h3.textContent = '3. Wellness & SPA Rules — Acknowledged & Signed';
+    content.appendChild(h3);
+    const p3 = document.createElement('p');
+    p3.textContent = "The guest confirms having read and agreed to the Règlement d'utilisation de l'Espace Fitness/Piscine/Wellness.";
+    content.appendChild(p3);
+    content.appendChild(sf('Lieu et date:', wellnessDate));
+    content.appendChild(sigRow('Signature:', sig3));
+
+    const ts = document.createElement('div');
+    ts.className = 'summary-timestamp';
+    ts.textContent = `Generated: ${new Date().toLocaleString()}`;
+    content.appendChild(ts);
+
+    const btnRow = document.createElement('div');
+    btnRow.className = 'print-btn-row';
+    const btnPrint = document.createElement('button');
+    btnPrint.className = 'btn btn-primary';
+    btnPrint.textContent = 'Print / Save as PDF';
+    btnPrint.onclick = () => window.print();
+    const btnClose = document.createElement('button');
+    btnClose.className = 'btn btn-secondary';
+    btnClose.textContent = 'Close Summary';
+    btnClose.onclick = () => { container.style.display = 'none'; };
+    btnRow.appendChild(btnPrint);
+    btnRow.appendChild(btnClose);
+
+    container.appendChild(content);
+    container.appendChild(btnRow);
 
     container.scrollIntoView({ behavior: 'smooth' });
   }

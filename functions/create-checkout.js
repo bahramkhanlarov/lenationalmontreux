@@ -10,13 +10,22 @@ function buildQueryString(params) {
     .join('&');
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGIN = 'https://lenationalmontreux.ch';
+
+function getCorsHeaders(request) {
+  const origin = request.headers.get('Origin');
+  const allowed = origin === ALLOWED_ORIGIN || origin === 'https://www.lenationalmontreux.ch' ? origin : ALLOWED_ORIGIN;
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
+}
 
 export async function handleCreateCheckout(request, env) {
+  const corsHeaders = getCorsHeaders(request);
+
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -30,7 +39,8 @@ export async function handleCreateCheckout(request, env) {
   const siteUrl  = 'https://lenationalmontreux.ch';
 
   if (!instance || !apiKey) {
-    return new Response(JSON.stringify({ error: 'Payrexx not configured.' }), {
+    console.error('Payrexx env vars not configured');
+    return new Response(JSON.stringify({ error: 'Payment service unavailable.' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
@@ -39,7 +49,7 @@ export async function handleCreateCheckout(request, env) {
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
       status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
@@ -95,7 +105,8 @@ export async function handleCreateCheckout(request, env) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error('Payrexx request error:', err.message);
+    return new Response(JSON.stringify({ error: 'Payment gateway error. Please try again.' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }

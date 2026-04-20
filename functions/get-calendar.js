@@ -28,13 +28,22 @@ function parseBlockedDates(ical) {
   return Array.from(blocked).sort();
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGIN = 'https://lenationalmontreux.ch';
+
+function getCorsHeaders(request) {
+  const origin = request.headers.get('Origin');
+  const allowed = origin === ALLOWED_ORIGIN || origin === 'https://www.lenationalmontreux.ch' ? origin : ALLOWED_ORIGIN;
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  };
+}
 
 export async function handleGetCalendar(request, env) {
+  const corsHeaders = getCorsHeaders(request);
+
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -42,7 +51,7 @@ export async function handleGetCalendar(request, env) {
   const icalUrl = env.AIRBNB_ICAL_URL;
 
   if (!icalUrl) {
-    return new Response(JSON.stringify({ blockedDates: [], warning: 'AIRBNB_ICAL_URL not configured' }), {
+    return new Response(JSON.stringify({ blockedDates: [] }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
@@ -57,7 +66,8 @@ export async function handleGetCalendar(request, env) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch calendar', detail: err.message }), {
+    console.error('Calendar fetch error:', err.message);
+    return new Response(JSON.stringify({ error: 'Failed to fetch calendar' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
