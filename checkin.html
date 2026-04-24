@@ -929,15 +929,6 @@
       <div class="check-icon">✓</div>
       <h2>Check-in Complete!</h2>
       <p>Thank you. All documents have been signed successfully.</p>
-      <p style="margin-top:1.5rem;">
-        <button class="btn btn-primary" onclick="generatePDF()">📄 Download Signed PDF</button>
-      </p>
-      <p style="margin-top:1rem; font-size:0.85rem; color:#666;">
-        The PDF will download to your browser's Downloads folder.
-      </p>
-      <p style="margin-top:1rem;">
-        <button class="btn btn-secondary" onclick="showPrintSummary()">Or view summary on screen</button>
-      </p>
     </div>
     <div id="print-summary" style="display:none;"></div>
   </div>
@@ -1128,6 +1119,7 @@
   function nextStep(n) {
     if (!validateStep(n)) return;
     showStep(n + 1);
+    if (n + 1 === 4) setTimeout(generatePDF, 300);
   }
 
   function prevStep(n) {
