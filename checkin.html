@@ -391,6 +391,34 @@
   .completion h2 { color: var(--dark); margin-bottom: 0.5rem; }
   .completion p { color: var(--text-light); font-size: 0.95rem; }
 
+  .completion-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+  }
+
+  .completion-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .completion-actions {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .completion-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
   .error-msg {
     color: #c0392b;
     font-size: 0.85rem;
@@ -929,6 +957,17 @@
       <div class="check-icon">✓</div>
       <h2>Check-in Complete!</h2>
       <p>Thank you. All documents have been signed successfully.</p>
+      <div class="completion-actions" style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="downloadPDF()" title="Download signed documents as PDF">
+          📥 Download PDF
+        </button>
+        <button class="btn btn-primary" onclick="printDocuments()" title="Print or save to PDF">
+          🖨️ Print / Save
+        </button>
+        <button class="btn btn-secondary" onclick="viewSummary()" title="View full summary">
+          👁️ View Summary
+        </button>
+      </div>
     </div>
     <div id="print-summary" style="display:none;"></div>
   </div>
@@ -1394,6 +1433,164 @@
     container.appendChild(btnRow);
 
     container.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ---- Download PDF (regenerate if needed) ----
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+    const name = document.getElementById('reg-name').value || 'Guest';
+    const apt = document.getElementById('reg-apt').value || '';
+    const arrival = document.getElementById('reg-arrival').value || '';
+    const departure = document.getElementById('reg-departure').value || '';
+    const email = document.getElementById('reg-email').value || '';
+    const passport = document.getElementById('reg-passport').value || '';
+    const nationality = document.getElementById('reg-nationality').value || '';
+    const dob = document.getElementById('reg-dob').value || '';
+    const adults = document.getElementById('reg-adults').value || '1';
+    const kids = document.getElementById('reg-kids').value || '0';
+    const street = document.getElementById('reg-street').value || '';
+    const city = document.getElementById('reg-city').value || '';
+    const buildingDate = document.getElementById('building-date').value || '';
+    const wellnessDate = document.getElementById('wellness-date').value || '';
+
+    const sig1 = sigImages[1] || document.getElementById('sig-1').toDataURL('image/png');
+    const sig2 = sigImages[2] || document.getElementById('sig-2').toDataURL('image/png');
+    const sig3 = sigImages[3] || document.getElementById('sig-3').toDataURL('image/png');
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 50;
+    let y = margin;
+
+    function checkPage(space) {
+      if (y + space > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    }
+
+    function heading(text, size) {
+      checkPage(30);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(size);
+      doc.setTextColor(26, 26, 46);
+      doc.text(text, margin, y);
+      y += size * 0.4 + 10;
+      doc.setDrawColor(184, 150, 12);
+      doc.setLineWidth(1.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 15;
+    }
+
+    function field(label, value) {
+      checkPage(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(label + ':', margin, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(40, 40, 40);
+      doc.text(String(value || '—'), margin + 120, y);
+      y += 18;
+    }
+
+    function paragraph(text) {
+      checkPage(30);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 60);
+      const lines = doc.splitTextToSize(text, pageWidth - 2 * margin);
+      doc.text(lines, margin, y);
+      y += lines.length * 13 + 5;
+    }
+
+    function signature(imgData) {
+      checkPage(100);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Signature:', margin, y);
+      y += 6;
+      try {
+        doc.addImage(imgData, 'PNG', margin, y, 200, 70);
+      } catch (e) { console.error('Signature image error:', e); }
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.5);
+      doc.rect(margin, y, 200, 70);
+      y += 85;
+    }
+
+    // === TITLE ===
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(26, 26, 46);
+    doc.text('LE NATIONAL DE MONTREUX', pageWidth / 2, y, { align: 'center' });
+    y += 22;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(184, 150, 12);
+    doc.text('Guest Check-in Summary', pageWidth / 2, y, { align: 'center' });
+    y += 20;
+    doc.setDrawColor(184, 150, 12);
+    doc.setLineWidth(2);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 25;
+
+    // === SECTION 1 ===
+    heading('1. Registration / Meldeschein', 13);
+    field('Name', name);
+    field('Apartment', apt);
+    field('Arrival', arrival);
+    field('Departure', departure);
+    field('Address', `${street}, ${city}`);
+    field('Passport Nr', passport);
+    field('Date of Birth', dob);
+    field('Nationality', nationality);
+    field('Guests', `${adults} adults, ${kids} children`);
+    field('Email', email);
+    y += 8;
+    signature(sig1);
+
+    // === SECTION 2 ===
+    y += 10;
+    heading('2. Building Rules — Acknowledged & Signed', 13);
+    paragraph('The guest confirms having read and agreed to the Reglement d\'administration et d\'utilisation of Le National de Montreux.');
+    field('Lieu et date', buildingDate);
+    y += 4;
+    signature(sig2);
+
+    // === SECTION 3 ===
+    y += 10;
+    heading('3. Wellness & SPA Rules — Acknowledged & Signed', 13);
+    paragraph('The guest confirms having read and agreed to the Reglement d\'utilisation de l\'Espace Fitness/Piscine/Wellness.');
+    field('Lieu et date', wellnessDate);
+    y += 4;
+    signature(sig3);
+
+    // === FOOTER ===
+    y += 10;
+    checkPage(20);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Generated: ' + new Date().toLocaleString(), pageWidth / 2, y, { align: 'center' });
+
+    // === SAVE ===
+    const safeName = name.replace(/[^a-z0-9]/gi, '_');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    doc.save(`Check-in_${safeName}_${dateStr}.pdf`);
+  }
+
+  // ---- Print Documents ----
+  function printDocuments() {
+    window.print();
+  }
+
+  // ---- View Summary ----
+  function viewSummary() {
+    showPrintSummary();
   }
 
   // ---- Auto-fill dates ----
