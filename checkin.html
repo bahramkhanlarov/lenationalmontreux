@@ -964,6 +964,7 @@
   let currentStep = 1;
   const totalSteps = 4;
   const sigData = {};
+  const sigImages = {}; // persisted data URLs, safe against canvas clearing
   const sigContexts = {};
   const sigDrawing = {};
 
@@ -975,6 +976,7 @@
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return; // hidden — don't clear
       const dpr = window.devicePixelRatio || 1;
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
@@ -983,6 +985,12 @@
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
+      // Redraw persisted signature after resize
+      if (sigImages[id]) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        img.src = sigImages[id];
+      }
     }
 
     resize();
@@ -1023,6 +1031,9 @@
       if (e) e.preventDefault();
       drawing = false;
       wrapper.classList.remove('signing');
+      if (sigData[id]) {
+        sigImages[id] = canvas.toDataURL('image/png');
+      }
     }
 
     canvas.addEventListener('mousedown', startDraw);
@@ -1039,9 +1050,10 @@
 
   function clearSig(id) {
     const { canvas, wrapper, resize } = sigDrawing[id];
+    delete sigImages[id];
+    sigData[id] = false;
     resize();
     wrapper.classList.remove('has-sig');
-    sigData[id] = false;
   }
 
   // ---- Navigation ----
@@ -1142,9 +1154,9 @@
     const buildingDate = document.getElementById('building-date').value || '';
     const wellnessDate = document.getElementById('wellness-date').value || '';
 
-    const sig1 = document.getElementById('sig-1').toDataURL('image/png');
-    const sig2 = document.getElementById('sig-2').toDataURL('image/png');
-    const sig3 = document.getElementById('sig-3').toDataURL('image/png');
+    const sig1 = sigImages[1] || document.getElementById('sig-1').toDataURL('image/png');
+    const sig2 = sigImages[2] || document.getElementById('sig-2').toDataURL('image/png');
+    const sig3 = sigImages[3] || document.getElementById('sig-3').toDataURL('image/png');
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -1285,9 +1297,9 @@
     const street = document.getElementById('reg-street').value || '';
     const city = document.getElementById('reg-city').value || '';
 
-    const sig1 = document.getElementById('sig-1').toDataURL();
-    const sig2 = document.getElementById('sig-2').toDataURL();
-    const sig3 = document.getElementById('sig-3').toDataURL();
+    const sig1 = sigImages[1] || document.getElementById('sig-1').toDataURL();
+    const sig2 = sigImages[2] || document.getElementById('sig-2').toDataURL();
+    const sig3 = sigImages[3] || document.getElementById('sig-3').toDataURL();
 
     const buildingDate = document.getElementById('building-date').value || '';
     const wellnessDate = document.getElementById('wellness-date').value || '';
