@@ -1071,6 +1071,26 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* SCROLL REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.from-left  { transform: translateX(-44px); }
+    .reveal.from-right { transform: translateX(44px); }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .stagger-children .reveal:nth-child(2) { transition-delay: 0.13s; }
+    .stagger-children .reveal:nth-child(3) { transition-delay: 0.26s; }
+    .stagger-children .reveal:nth-child(4) { transition-delay: 0.39s; }
+    .stagger-children .reveal:nth-child(5) { transition-delay: 0.52s; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
   </style>
 </head>
 
@@ -1093,7 +1113,8 @@
       <button class="lang-btn" data-lang="ru" onclick="setLanguage('ru')">🇷🇺</button>
       <button class="lang-btn" data-lang="zh" onclick="setLanguage('zh')">🇨🇳</button>
     </div>
-    <button class="nav-book" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})" data-i18n="navBookNow">Book Now</button>
+    <button class="nav-book" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})"
+      data-i18n="navBookNow">Book Now</button>
   </nav>
 
   <!-- HERO SLIDESHOW -->
@@ -1116,23 +1137,29 @@
   </div>
 
   <!-- FEATURES BAR -->
-  <div class="features-bar">
-    <div class="feature-item"><span class="feature-icon">🛏</span> <span data-i18n="featureBedrooms">2 Bedrooms · Up to 8 Guests</span></div>
-    <div class="feature-item"><span class="feature-icon">🏔</span> <span data-i18n="featureViews">Lake &amp; Mountain Views</span></div>
-    <div class="feature-item"><span class="feature-icon">🎷</span> <span data-i18n="featureFestival">Jazz Festival Location</span></div>
-    <div class="feature-item"><span class="feature-icon">⭐</span> <span data-i18n="featureRating">4.9 on Airbnb</span></div>
-    <div class="feature-item"><span class="feature-icon">✈️</span> <span data-i18n="featureAirport">55 min Geneva Airport</span></div>
+  <div class="features-bar stagger-children">
+    <div class="feature-item reveal"><span class="feature-icon">🛏</span> <span data-i18n="featureBedrooms">2 Bedrooms · Up to
+        8 Guests</span></div>
+    <div class="feature-item reveal"><span class="feature-icon">🏔</span> <span data-i18n="featureViews">Lake &amp; Mountain
+        Views</span></div>
+    <div class="feature-item reveal"><span class="feature-icon">🎷</span> <span data-i18n="featureFestival">Jazz Festival
+        Location</span></div>
+    <div class="feature-item reveal"><span class="feature-icon">⭐</span> <span data-i18n="featureRating">4.9 on Airbnb</span>
+    </div>
+    <div class="feature-item reveal"><span class="feature-icon">✈️</span> <span data-i18n="featureAirport">55 min Geneva
+        Airport</span></div>
   </div>
 
   <!-- GALLERY -->
   <section id="gallery">
     <div class="section-inner">
-      <div class="section-label" data-i18n="galleryLabel">Photo Gallery</div>
-      <h2 class="section-title" data-i18n="galleryTitle">Inside Le National</h2>
-      <div class="section-divider"></div>
+      <div class="section-label reveal" data-i18n="galleryLabel">Photo Gallery</div>
+      <h2 class="section-title reveal" data-i18n="galleryTitle">Inside Le National</h2>
+      <div class="section-divider reveal"></div>
       <div class="gallery-grid" id="galleryGrid"></div>
       <div class="gallery-more">
-        <button class="btn-outline" id="showMoreBtn" onclick="showAllPhotos()" data-i18n="galleryViewAll">View All Photos</button>
+        <button class="btn-outline" id="showMoreBtn" onclick="showAllPhotos()" data-i18n="galleryViewAll">View All
+          Photos</button>
       </div>
     </div>
   </section>
@@ -1149,33 +1176,47 @@
   <section id="about">
     <div class="section-inner">
       <div class="about-grid">
-        <div class="about-text">
+        <div class="about-text reveal from-left">
           <div class="section-label" data-i18n="aboutLabel">The Apartment</div>
           <h2 class="section-title" data-i18n="aboutTitle">Your Home Above Lake Geneva</h2>
           <div class="section-divider"></div>
-          <p data-i18n="aboutText1">Nestled in the heart of Montreux, Le National is a beautifully appointed apartment offering sweeping views
+          <p data-i18n="aboutText1">Nestled in the heart of Montreux, Le National is a beautifully appointed apartment
+            offering sweeping views
             of Lake Geneva and the Alps. Whether you're here for the world-famous Jazz Festival, a mountain retreat, or
             simply to soak in the charm of the Swiss Riviera, this is your perfect base.</p>
-          <p data-i18n="aboutText2">The apartment blends contemporary comfort with timeless elegance — high ceilings, designer furnishings, a
+          <p data-i18n="aboutText2">The apartment blends contemporary comfort with timeless elegance — high ceilings,
+            designer furnishings, a
             fully equipped kitchen, and a terrace where you can sip your morning coffee as the lake shimmers below.</p>
           <div class="amenities-grid">
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityLakeViews">Lake views</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityFullKitchen">Full kitchen</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityWiFi">High-speed WiFi</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenitySmartTV">Smart TV</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityWasherDryer">Washer/Dryer</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityAC">AC &amp; Heating</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityTerrace">Private terrace</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityLinens">Premium linens</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityKeyless">Keyless entry</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityParking">Private parking</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenitySpa">Access to Spa (swimming pool, fitness, jacuzzi,
-              hamam, sauna)</span></div>
-            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityBabyCot">Baby cot available</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityLakeViews">Lake
+                views</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityFullKitchen">Full
+                kitchen</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityWiFi">High-speed
+                WiFi</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenitySmartTV">Smart TV</span>
+            </div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span
+                data-i18n="amenityWasherDryer">Washer/Dryer</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityAC">AC &amp; Heating</span>
+            </div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityTerrace">Private
+                terrace</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityLinens">Premium
+                linens</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityKeyless">Keyless
+                entry</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityParking">Private
+                parking</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenitySpa">Access to Spa
+                (swimming pool, fitness, jacuzzi,
+                hamam, sauna)</span></div>
+            <div class="amenity"><span class="amenity-icon">✓</span> <span data-i18n="amenityBabyCot">Baby cot
+                available</span></div>
           </div>
         </div>
         <div>
-          <img class="about-img" src="photos/a38a999d-639b-4759-9c83-3d17b485fa19.avif" alt="Apartment living area">
+          <img class="about-img reveal from-right" src="photos/a38a999d-639b-4759-9c83-3d17b485fa19.avif" alt="Apartment living area">
         </div>
       </div>
     </div>
@@ -1189,7 +1230,8 @@
           <div class="section-label" data-i18n="bookingLabel">Instant Booking</div>
           <h2 class="section-title" data-i18n="bookingTitle">Reserve Your Dates</h2>
           <div class="section-divider"></div>
-          <p style="color:#666;line-height:1.7;margin-bottom:30px;" data-i18n="bookingDesc">Select your check-in and check-out dates below.
+          <p style="color:#666;line-height:1.7;margin-bottom:30px;" data-i18n="bookingDesc">Select your check-in and
+            check-out dates below.
             Availability is synced in real time with our Airbnb calendar. Secure payment via Stripe. You will be
             redirected to complete your booking.</p>
           <div class="calendar-wrap">
@@ -1200,15 +1242,19 @@
             </div>
             <div class="cal-grid" id="calGrid"></div>
             <div class="cal-legend">
-              <span><span class="legend-dot" style="background:var(--gold)"></span><span data-i18n="calLegendSelected">Selected</span></span>
-              <span><span class="legend-dot" style="background:#f5ead8"></span><span data-i18n="calLegendStay">Your stay</span></span>
-              <span><span class="legend-dot" style="background:#f5f5f5;border:1px solid #ddd"></span><span data-i18n="calLegendUnavailable">Unavailable</span></span>
+              <span><span class="legend-dot" style="background:var(--gold)"></span><span
+                  data-i18n="calLegendSelected">Selected</span></span>
+              <span><span class="legend-dot" style="background:#f5ead8"></span><span data-i18n="calLegendStay">Your
+                  stay</span></span>
+              <span><span class="legend-dot" style="background:#f5f5f5;border:1px solid #ddd"></span><span
+                  data-i18n="calLegendUnavailable">Unavailable</span></span>
             </div>
             <div class="cal-status" id="calStatus" data-i18n="calStatusSelect">Select your check-in date</div>
           </div>
         </div>
         <div class="booking-form-wrap">
-          <h3 style="font-size:1.3rem;font-weight:400;margin-bottom:24px;" data-i18n="bookingDetails">Booking Details</h3>
+          <h3 style="font-size:1.3rem;font-weight:400;margin-bottom:24px;" data-i18n="bookingDetails">Booking Details
+          </h3>
           <div class="form-row">
             <div class="form-group">
               <label data-i18n="formCheckIn">Check-in</label>
@@ -1264,8 +1310,10 @@
               <span id="priceTotal">CHF —</span>
             </div>
           </div>
-          <button class="btn-book" id="btnBook" onclick="handleBooking()" data-i18n="btnProceedPayment">Proceed to Payment</button>
-          <p class="booking-note" data-i18n="bookingNote">Minimum 3 nights · Free cancellation up to 14 days before check-in</p>
+          <button class="btn-book" id="btnBook" onclick="handleBooking()" data-i18n="btnProceedPayment">Proceed to
+            Payment</button>
+          <p class="booking-note" data-i18n="bookingNote">Minimum 3 nights · Free cancellation up to 14 days before
+            check-in</p>
         </div>
       </div>
     </div>
@@ -1278,22 +1326,22 @@
       <div class="section-label" data-i18n="reviewsLabel">Guest Reviews</div>
       <h2 class="section-title" data-i18n="reviewsTitle">What Guests Say</h2>
       <div class="section-divider"></div>
-      <div class="reviews-grid">
-        <div class="review-card">
+      <div class="reviews-grid stagger-children">
+        <div class="review-card reveal">
           <div class="review-stars">★★★★★</div>
           <p class="review-text">"Absolutely stunning apartment with an incredible view of Lake Geneva. The location is
             perfect — everything within walking distance. Bahram was an excellent host, responsive and welcoming. We'll
             definitely be back!"</p>
           <div class="review-author" data-i18n="reviewAuthor1">— Sophie M., Paris · July 2025</div>
         </div>
-        <div class="review-card">
+        <div class="review-card reveal">
           <div class="review-stars">★★★★★</div>
           <p class="review-text">"We stayed during the Jazz Festival and it was magical. The apartment is beautifully
             decorated, spotlessly clean, and the terrace is perfect for evenings. Can't imagine a better base for
             Montreux."</p>
           <div class="review-author" data-i18n="reviewAuthor2">— Marcus T., London · July 2025</div>
         </div>
-        <div class="review-card">
+        <div class="review-card reveal">
           <div class="review-stars">★★★★★</div>
           <p class="review-text">"Everything about this stay exceeded expectations. The views, the apartment's design,
             the fully equipped kitchen. Montreux itself is a gem and this is the perfect place to experience it. Highly
@@ -1307,8 +1355,9 @@
           <div style="color:var(--gold);font-size:1.3rem;letter-spacing:2px">★★★★★</div>
           <div class="rating-detail">
             <strong data-i18n="reviewRatingLabel">Exceptional</strong>
-            <span data-i18n="reviewRatingDesc">Rated 4.9 out of 5 on Airbnb</span> · <a href="https://www.airbnb.com/rooms/892035101127208845" target="_blank"
-              style="color:var(--gold)" data-i18n="reviewViewListing">View listing →</a>
+            <span data-i18n="reviewRatingDesc">Rated 4.9 out of 5 on Airbnb</span> · <a
+              href="https://www.airbnb.com/rooms/892035101127208845" target="_blank" style="color:var(--gold)"
+              data-i18n="reviewViewListing">View listing →</a>
           </div>
         </div>
       </div>
@@ -1319,23 +1368,26 @@
   <section id="location">
     <div class="section-inner">
       <div class="location-grid">
-        <div>
+        <div class="reveal from-left">
           <div class="section-label" data-i18n="locationLabel">Where We Are</div>
           <h2 class="section-title" data-i18n="locationTitle">Montreux, Swiss Riviera</h2>
           <div class="section-divider"></div>
-          <p style="color:#666;line-height:1.7;margin-bottom:10px" data-i18n="locationDesc">Le National sits in the centre of Montreux, within
+          <p style="color:#666;line-height:1.7;margin-bottom:10px" data-i18n="locationDesc">Le National sits in the
+            centre of Montreux, within
             easy walking distance of the lakefront promenade, fine dining, and world-class attractions.</p>
           <ul class="location-items">
-            <li><span class="icon">🚶</span> <span data-i18n="locPromenade">Lake Geneva promenade — 3 min walk</span></li>
+            <li><span class="icon">🚶</span> <span data-i18n="locPromenade">Lake Geneva promenade — 3 min walk</span>
+            </li>
             <li><span class="icon">🎷</span> <span data-i18n="locFestival">Jazz Festival venues — 5 min walk</span></li>
-            <li><span class="icon">🏰</span> <span data-i18n="locCastle">Château de Chillon — 15 min by train</span></li>
+            <li><span class="icon">🏰</span> <span data-i18n="locCastle">Château de Chillon — 15 min by train</span>
+            </li>
             <li><span class="icon">🚞</span> <span data-i18n="locTrain">Montreux train station — 8 min walk</span></li>
             <li><span class="icon">✈️</span> <span data-i18n="locAirport">Geneva Airport — 55 min by train</span></li>
             <li><span class="icon">⛷</span> <span data-i18n="locSkiResort">Leysin ski resort — 45 min by car</span></li>
             <li><span class="icon">🍽</span> <span data-i18n="locDining">Fine dining — multiple within 2 min</span></li>
           </ul>
         </div>
-        <div>
+        <div class="reveal from-right">
           <div class="map-container">
             <iframe
               src="https://maps.google.com/maps?q=Avenue+du+Casino+10%2C+1820+Montreux%2C+Switzerland&output=embed&z=17"
@@ -1350,20 +1402,22 @@
   <!-- CONTACT -->
   <section id="contact">
     <div class="section-inner">
-      <div class="section-label" data-i18n="contactLabel">Get in Touch</div>
-      <h2 class="section-title" data-i18n="contactTitle">Contact Us</h2>
-      <div class="section-divider"></div>
+      <div class="section-label reveal" data-i18n="contactLabel">Get in Touch</div>
+      <h2 class="section-title reveal" data-i18n="contactTitle">Contact Us</h2>
+      <div class="section-divider reveal"></div>
       <div class="contact-grid">
-        <div class="contact-info">
+        <div class="contact-info reveal from-left">
           <h3 data-i18n="contactHeading">We'd love to hear from you</h3>
-          <p data-i18n="contactDesc">Have a question about the apartment, availability, or your upcoming stay? Send us a message and we'll get
+          <p data-i18n="contactDesc">Have a question about the apartment, availability, or your upcoming stay? Send us a
+            message and we'll get
             back to you within 24 hours.</p>
           <p>📧 <a href="mailto:info@lenationalmontreux.ch" data-i18n="contactEmail">info@lenationalmontreux.ch</a></p>
           <p>📍 <span data-i18n="contactAddress">Avenue du Casino 10, 1820 Montreux</span></p>
-          <p style="margin-top:20px;font-size:0.85rem;color:#999;" data-i18n="contactUrgent">For urgent matters regarding an existing booking,
+          <p style="margin-top:20px;font-size:0.85rem;color:#999;" data-i18n="contactUrgent">For urgent matters
+            regarding an existing booking,
             please contact us directly by email.</p>
         </div>
-        <div>
+        <div class="reveal from-right">
           <form class="contact-form" onsubmit="handleContactSubmit(event)">
             <input type="hidden" name="access_key" value="7cdd1f01-85d4-424b-960e-ecaf5ddeaea9">
             <input type="hidden" name="subject" value="New enquiry — Le National Montreux">
@@ -1383,10 +1437,12 @@
   </section>
 
   <!-- CHECK-IN PORTAL CTA -->
-  <div class="checkin-cta">
+  <div class="checkin-cta reveal">
     <h2 data-i18n="checkinHeading">Already Booked?</h2>
-    <p data-i18n="checkinDesc">Complete your digital check-in and upload your travel documents before arrival for a seamless experience.</p>
-    <a href="/checkin.html" class="hero-cta" style="font-size:0.85rem;padding:14px 36px" data-i18n="checkinButton">Go to Check-in Portal →</a>
+    <p data-i18n="checkinDesc">Complete your digital check-in and upload your travel documents before arrival for a
+      seamless experience.</p>
+    <a href="/checkin.html" class="hero-cta" style="font-size:0.85rem;padding:14px 36px" data-i18n="checkinButton">Go to
+      Check-in Portal →</a>
   </div>
 
   <!-- FOOTER -->
@@ -1450,10 +1506,13 @@
       const grid = document.getElementById('galleryGrid');
       const photos = all ? PHOTOS : PHOTOS.slice(0, GALLERY_PREVIEW);
       grid.innerHTML = photos.map((url, i) =>
-        `<img class="gallery-img" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" onclick="openLightbox(${all ? i : i})">`
+        `<img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" onclick="openLightbox(${all ? i : i})">`
       ).join('');
       document.getElementById('showMoreBtn').textContent = all ? 'Show Less' : `View All ${PHOTOS.length} Photos`;
       showingAll = all;
+      if (window.__revealObserver) {
+        grid.querySelectorAll('.reveal:not(.visible)').forEach(el => window.__revealObserver.observe(el));
+      }
     }
     function showAllPhotos() { renderGallery(!showingAll); }
 
@@ -1807,6 +1866,25 @@
 
   <!-- LANGUAGE SUPPORT -->
   <script src="translations.js"></script>
+
+  <!-- SCROLL REVEAL -->
+  <script>
+    (function () {
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      window.__revealObserver = observer;
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+  </script>
 </body>
 
 </html>
