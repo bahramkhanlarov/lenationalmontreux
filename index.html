@@ -1075,19 +1075,19 @@
     /* SCROLL REVEAL */
     .reveal {
       opacity: 0;
-      transform: translateY(32px);
-      transition: opacity 0.75s ease, transform 0.75s ease;
+      transform: translateY(56px) scale(0.97);
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .reveal.from-left  { transform: translateX(-44px); }
-    .reveal.from-right { transform: translateX(44px); }
+    .reveal.from-left  { transform: translateX(-70px) scale(0.97); }
+    .reveal.from-right { transform: translateX(70px) scale(0.97); }
     .reveal.visible {
       opacity: 1;
       transform: none;
     }
-    .stagger-children .reveal:nth-child(2) { transition-delay: 0.13s; }
-    .stagger-children .reveal:nth-child(3) { transition-delay: 0.26s; }
-    .stagger-children .reveal:nth-child(4) { transition-delay: 0.39s; }
-    .stagger-children .reveal:nth-child(5) { transition-delay: 0.52s; }
+    .stagger-children .reveal:nth-child(2) { transition-delay: 0.15s; }
+    .stagger-children .reveal:nth-child(3) { transition-delay: 0.30s; }
+    .stagger-children .reveal:nth-child(4) { transition-delay: 0.45s; }
+    .stagger-children .reveal:nth-child(5) { transition-delay: 0.60s; }
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
     }
