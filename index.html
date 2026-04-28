@@ -1074,6 +1074,357 @@
       }
     }
 
+    /* ─── RATES SECTION (dark seasonal pricing) ────────────────────── */
+    .rates-section {
+      position: relative;
+      background: #000;
+      color: #fff;
+      padding: 0;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .rates-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right,  rgba(255,255,255,0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 70px 80px;
+      -webkit-mask-image: radial-gradient(50% 50%, white, transparent);
+      mask-image: radial-gradient(50% 50%, white, transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .rates-glow-ring {
+      position: absolute;
+      left: -568px;
+      right: -568px;
+      top: -100px;
+      height: 2000px;
+      border-radius: 50%;
+      border: 200px solid #3131f5;
+      filter: blur(92px);
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .rates-radial-glow {
+      position: absolute;
+      top: 0;
+      left: 10%;
+      width: 80%;
+      height: 100%;
+      background: radial-gradient(circle at center, #206ce8 0%, transparent 70%);
+      opacity: 0.5;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .rates-sparkle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(50% 50%, white, transparent 85%);
+      mask-image: radial-gradient(50% 50%, white, transparent 85%);
+      z-index: 1;
+    }
+
+    .rates-content {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 128px 20px 80px;
+    }
+
+    .rates-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .rates-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .rates-heading {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+
+    .rates-heading .word {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+
+    .rates-heading .word-inner {
+      display: inline-block;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), opacity 0.55s ease;
+    }
+
+    .rates-heading.in-view .word-inner {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .rates-subtext {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    /* Toggle */
+    .rates-toggle-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .rates-toggle {
+      position: relative;
+      display: inline-flex;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 9999px;
+      padding: 4px;
+      gap: 0;
+    }
+
+    .rates-toggle-pill {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: calc(100% - 8px);
+      border-radius: 9999px;
+      background: linear-gradient(to top, #2563eb, #3b82f6);
+      border: 3px solid #60a5fa;
+      box-shadow: 0 0 14px rgba(59,130,246,0.55);
+      transition:
+        transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+        width   0.4s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .rates-toggle-btn {
+      position: relative;
+      z-index: 1;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.65);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 28px;
+      border-radius: 9999px;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .rates-toggle-btn.active {
+      color: #fff;
+    }
+
+    /* Cards */
+    .rates-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .rcard {
+      position: relative;
+      background: linear-gradient(140deg, #1c1c1c 0%, #141414 100%);
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .rcard:hover {
+      transform: translateY(-5px);
+    }
+
+    .rcard-popular {
+      box-shadow: 0 -13px 300px 0 rgba(9,0,255,0.5);
+      border-color: #333;
+      z-index: 5;
+    }
+
+    .rcard-popular:hover {
+      box-shadow: 0 -13px 360px 0 rgba(9,0,255,0.65);
+    }
+
+    .rcard-badge {
+      background: linear-gradient(to right, #2563eb, #3b82f6);
+      color: #fff;
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      font-weight: 700;
+    }
+
+    .rcard-header {
+      padding: 28px 24px 0;
+    }
+
+    .rcard-name {
+      font-size: 1.9rem;
+      font-weight: 400;
+      margin-bottom: 14px;
+      color: #fff;
+    }
+
+    .rcard-price {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      margin-bottom: 12px;
+    }
+
+    .rcard-currency {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .rcard-amount {
+      font-size: 2.8rem;
+      font-weight: 600;
+      min-width: 64px;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      display: inline-block;
+    }
+
+    .rcard-period {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      margin-left: 4px;
+    }
+
+    .rcard-desc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .rcard-body {
+      padding: 0 24px 28px;
+    }
+
+    .rcard-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 22px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .rcard-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .rcard-btn-outline {
+      background: linear-gradient(to top, #0c0c0c, #252525);
+      border: 1px solid #3a3a3a;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+
+    .rcard-btn-popular {
+      background: linear-gradient(to top, #1d4ed8, #3b82f6);
+      border: 1px solid #60a5fa;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+    }
+
+    .rcard-btn-popular:hover {
+      box-shadow: 0 6px 28px rgba(59,130,246,0.65);
+    }
+
+    .rcard-features {
+      border-top: 1px solid #252525;
+      padding-top: 18px;
+    }
+
+    .rcard-features-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 12px;
+    }
+
+    .rcard-features ul {
+      list-style: none;
+    }
+
+    .rcard-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.55);
+      padding: 4px 0;
+    }
+
+    .rcard-features li::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #444;
+      flex-shrink: 0;
+    }
+
+    .rates-footnote {
+      text-align: center;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      font-style: italic;
+    }
+
+    @keyframes rcardPriceIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .rcard-amount.price-in {
+      animation: rcardPriceIn 0.22s ease forwards;
+    }
+
+    @media (max-width: 900px) {
+      .rates-cards {
+        grid-template-columns: 1fr;
+        max-width: 440px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .rcard-popular { order: -1; }
+    }
+
     /* SCROLL REVEAL */
     .reveal {
       opacity: 0;
@@ -1105,6 +1456,7 @@
       <a href="#gallery" data-i18n="navGallery">Gallery</a>
       <a href="#about" data-i18n="navApartment">The Apartment</a>
       <a href="#booking" data-i18n="navBook">Book</a>
+      <a href="#rates" data-i18n="navRates">Rates</a>
       <a href="#location" data-i18n="navLocation">Location</a>
       <a href="#contact" data-i18n="navContact">Contact</a>
     </div>
@@ -1322,6 +1674,115 @@
     </div>
   </section>
 
+
+  <!-- RATES -->
+  <section id="rates" class="rates-section">
+    <div class="rates-bg-grid"></div>
+    <div class="rates-glow-ring"></div>
+    <div class="rates-radial-glow"></div>
+    <canvas class="rates-sparkle-canvas" id="ratesCanvas"></canvas>
+
+    <div class="rates-content">
+      <div class="rates-header">
+        <p class="rates-eyebrow reveal" data-i18n="ratesLabel">Seasonal Rates</p>
+        <h2 class="rates-heading" id="ratesHeading" data-i18n="ratesTitle">Plans that work best for your stay</h2>
+        <p class="rates-subtext reveal" data-i18n="ratesSubtext">Transparent pricing, no hidden fees. Book direct for the best rates on Lake Geneva.</p>
+        <div class="rates-toggle-wrap reveal">
+          <div class="rates-toggle" id="ratesToggle">
+            <div class="rates-toggle-pill" id="ratesPill"></div>
+            <button class="rates-toggle-btn active" onclick="setRatesPeriod(0)" data-i18n="ratesPerNight">Per Night</button>
+            <button class="rates-toggle-btn" onclick="setRatesPeriod(1)" data-i18n="ratesPerWeek">Per Week</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rates-cards stagger-children">
+        <!-- Standard Season -->
+        <div class="rcard reveal">
+          <div class="rcard-header">
+            <h3 class="rcard-name" data-i18n="ratesStandardName">Standard</h3>
+            <div class="rcard-price">
+              <span class="rcard-currency">CHF</span>
+              <span class="rcard-amount" id="ratesPriceStandard">300</span>
+              <span class="rcard-period" data-i18n="ratesNight">/night</span>
+            </div>
+            <p class="rcard-desc" data-i18n="ratesStandardDesc">Oct – Jun (excl. special periods). Perfect for getaways, city breaks &amp; off-peak relaxation on the Swiss Riviera.</p>
+          </div>
+          <div class="rcard-body">
+            <button class="rcard-btn rcard-btn-outline" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})" data-i18n="ratesBookBtn">Book This Rate</button>
+            <div class="rcard-features">
+              <p class="rcard-features-label" data-i18n="ratesIncludes">Includes:</p>
+              <ul>
+                <li data-i18n="ratesFeatFull">Full apartment · up to 8 guests</li>
+                <li data-i18n="ratesFeatTerrace">Private terrace with lake views</li>
+                <li data-i18n="ratesFeatSpa">Spa access (pool, jacuzzi, sauna)</li>
+                <li data-i18n="ratesFeatParking">Private parking included</li>
+                <li data-i18n="ratesFeatLinens">Premium linens &amp; towels</li>
+                <li data-i18n="ratesFeatWifi">High-speed WiFi &amp; Smart TV</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shoulder Season (popular) -->
+        <div class="rcard rcard-popular reveal">
+          <div class="rcard-badge" data-i18n="ratesMostRequested">Most Requested</div>
+          <div class="rcard-header">
+            <h3 class="rcard-name" data-i18n="ratesShoulderName">Shoulder</h3>
+            <div class="rcard-price">
+              <span class="rcard-currency">CHF</span>
+              <span class="rcard-amount" id="ratesPriceShoulder">350</span>
+              <span class="rcard-period" data-i18n="ratesNight">/night</span>
+            </div>
+            <p class="rcard-desc" data-i18n="ratesShoulderDesc">September &amp; late Nov – Dec 25. Ideal for autumn colour, Christmas markets &amp; festive Swiss breaks.</p>
+          </div>
+          <div class="rcard-body">
+            <button class="rcard-btn rcard-btn-popular" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})" data-i18n="ratesBookBtn">Book This Rate</button>
+            <div class="rcard-features">
+              <p class="rcard-features-label" data-i18n="ratesShoulderPlus">Everything in Standard, plus:</p>
+              <ul>
+                <li data-i18n="ratesFeatAutumn">Autumn &amp; winter atmosphere</li>
+                <li data-i18n="ratesFeatXmas">Christmas market proximity</li>
+                <li data-i18n="ratesFeatFondue">Fondue restaurant guidance</li>
+                <li data-i18n="ratesFeatSki">Ski resort day-trip planning</li>
+                <li data-i18n="ratesFeatStorage">Winter gear storage</li>
+                <li data-i18n="ratesFeatBasket">Welcome amenities basket</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Peak Season -->
+        <div class="rcard reveal">
+          <div class="rcard-header">
+            <h3 class="rcard-name" data-i18n="ratesPeakName">Peak Season</h3>
+            <div class="rcard-price">
+              <span class="rcard-currency">CHF</span>
+              <span class="rcard-amount" id="ratesPricePeak">400</span>
+              <span class="rcard-period" data-i18n="ratesNight">/night</span>
+            </div>
+            <p class="rcard-desc" data-i18n="ratesPeakDesc">July &amp; August. Prime summer including the world-famous Montreux Jazz Festival and lake swimming.</p>
+          </div>
+          <div class="rcard-body">
+            <button class="rcard-btn rcard-btn-outline" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})" data-i18n="ratesBookBtn">Book This Rate</button>
+            <div class="rcard-features">
+              <p class="rcard-features-label" data-i18n="ratesPeakPlus">Everything in Shoulder, plus:</p>
+              <ul>
+                <li data-i18n="ratesFeatJazz">Jazz Festival prime location</li>
+                <li data-i18n="ratesFeatSwimming">Lake Geneva swimming access</li>
+                <li data-i18n="ratesFeatFestival">Festival event guidance</li>
+                <li data-i18n="ratesFeatSunsets">Rooftop terrace sunsets</li>
+                <li data-i18n="ratesFeatBbq">Summer BBQ equipment</li>
+                <li data-i18n="ratesFeatConcierge">Concierge recommendations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="rates-footnote reveal" data-i18n="ratesFootnote">All rates subject to a one-time CHF 100 cleaning fee · Minimum 3-night stay · VAT included</p>
+    </div>
+  </section>
 
   <!-- REVIEWS -->
   <section id="reviews">
@@ -1865,6 +2326,116 @@
     // ─── INIT ────────────────────────────────────────────────────────────────────
     renderGallery(false);
     initCalendar();
+
+    // ─── RATES SPARKLES ──────────────────────────────────────────────────────────
+    (function () {
+      const section = document.getElementById('rates');
+      const canvas  = document.getElementById('ratesCanvas');
+      if (!section || !canvas) return;
+      const ctx = canvas.getContext('2d');
+      let active = false;
+      const particles = Array.from({ length: 130 }, () => ({
+        x: Math.random(), y: Math.random(),
+        r: Math.random() * 1.2 + 0.4,
+        spd: Math.random() * 0.35 + 0.12,
+        phase: Math.random() * Math.PI * 2,
+      }));
+
+      function resize() {
+        canvas.width  = section.offsetWidth;
+        canvas.height = section.offsetHeight;
+      }
+      function draw() {
+        if (!active) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(function (p) {
+          p.y -= p.spd / canvas.height * 1.8;
+          if (p.y < 0) { p.y = 1; p.x = Math.random(); }
+          p.phase += 0.032;
+          var a = (0.12 + 0.58 * Math.abs(Math.sin(p.phase))).toFixed(2);
+          ctx.beginPath();
+          ctx.arc(p.x * canvas.width, p.y * canvas.height, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + a + ')';
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      var sparkleIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && !active) { resize(); active = true; draw(); }
+          else if (!e.isIntersecting) { active = false; }
+        });
+      }, { threshold: 0.05 });
+      sparkleIO.observe(section);
+      window.addEventListener('resize', resize);
+    })();
+
+    // ─── RATES TOGGLE & PRICES ───────────────────────────────────────────────────
+    (function () {
+      var NIGHT = { standard: 300,  shoulder: 350,  peak: 400  };
+      var WEEK  = { standard: 1850, shoulder: 2150, peak: 2500 };
+      var period = 0;
+
+      function movePill(idx) {
+        var toggle = document.getElementById('ratesToggle');
+        var pill   = document.getElementById('ratesPill');
+        if (!toggle || !pill) return;
+        var btns = toggle.querySelectorAll('.rates-toggle-btn');
+        pill.style.width = btns[idx].offsetWidth + 'px';
+        pill.style.transform = idx === 0 ? 'translateX(0)' :
+          'translateX(' + (btns[1].offsetLeft - btns[0].offsetLeft) + 'px)';
+      }
+
+      window.setRatesPeriod = function (idx) {
+        if (idx === period) return;
+        period = idx;
+        var toggle = document.getElementById('ratesToggle');
+        if (toggle) {
+          toggle.querySelectorAll('.rates-toggle-btn').forEach(function (b, i) {
+            b.classList.toggle('active', i === idx);
+          });
+        }
+        movePill(idx);
+        var prices = idx === 0 ? NIGHT : WEEK;
+        var label  = idx === 0 ? '/night' : '/week';
+        [['standard','ratesPriceStandard'],['shoulder','ratesPriceShoulder'],['peak','ratesPricePeak']]
+          .forEach(function (pair) {
+            var el = document.getElementById(pair[1]);
+            if (!el) return;
+            el.style.opacity   = '0';
+            el.style.transform = 'translateY(-10px)';
+            setTimeout(function () {
+              el.textContent     = prices[pair[0]].toLocaleString('en-CH');
+              el.style.opacity   = '';
+              el.style.transform = '';
+              el.classList.remove('price-in');
+              void el.offsetWidth;
+              el.classList.add('price-in');
+            }, 190);
+          });
+        document.querySelectorAll('.rcard-period').forEach(function (el) { el.textContent = label; });
+      };
+
+      window.addEventListener('load', function () { movePill(0); });
+    })();
+
+    // ─── RATES HEADING WORD REVEAL ───────────────────────────────────────────────
+    (function () {
+      var heading = document.getElementById('ratesHeading');
+      if (!heading) return;
+      var words = heading.textContent.trim().split(/\s+/);
+      heading.innerHTML = words.map(function (w, i) {
+        return '<span class="word" style="margin-right:0.28em">' +
+          '<span class="word-inner" style="transition-delay:' + (i * 0.08) + 's">' + w + '</span>' +
+          '</span>';
+      }).join('');
+      var wordIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { heading.classList.add('in-view'); wordIO.unobserve(heading); }
+        });
+      }, { threshold: 0.3 });
+      wordIO.observe(heading);
+    })();
   </script>
 
   <!-- LANGUAGE SUPPORT -->
