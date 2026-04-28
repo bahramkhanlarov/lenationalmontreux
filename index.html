@@ -120,63 +120,130 @@
       transform: scale(1.1);
     }
 
-    /* HERO SLIDESHOW */
+    /* HERO VIDEO */
     .hero {
       position: relative;
-      height: 100vh;
+      width: 100%;
       overflow: hidden;
+      transition: min-height 0.5s ease, padding 0.5s ease;
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
     }
 
-    .slide {
+    .hero.hero-fit {
+      min-height: 0;
+      padding: 140px 24px 100px;
+    }
+
+    .hero video {
       position: absolute;
       inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 1.2s ease;
-    }
-
-    .slide.active {
-      opacity: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
     }
 
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%);
+      z-index: 1;
     }
 
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
+    .hero-toggle-btn {
+      position: absolute;
+      top: 74px;
+      right: 20px;
+      z-index: 20;
+      padding: 10px;
+      border-radius: 10px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(164,132,215,0.5);
+      background: rgba(85,80,110,0.4);
       color: #fff;
-      padding: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      line-height: 0;
     }
 
-    .hero-eyebrow {
-      font-size: 0.8rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 16px;
+    .hero-toggle-btn:hover {
+      background: rgba(85,80,110,0.65);
     }
 
-    .hero-title {
-      font-size: clamp(2.4rem, 5vw, 4rem);
+    .hero-v2-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 180px 24px 100px;
+      flex: 1;
+    }
+
+    .hero.hero-fit .hero-v2-content {
+      padding: 0;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 10px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(164,132,215,0.5);
+      background: rgba(85,80,110,0.4);
+      box-shadow: 0 0 20px rgba(123,57,252,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 32px;
+    }
+
+    .hero-pill-badge {
+      background: var(--gold);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 8px rgba(201,168,76,0.5);
+    }
+
+    .hero-v2-title {
+      font-size: clamp(2.8rem, 7vw, 6rem);
       font-weight: 400;
-      margin-bottom: 16px;
-      line-height: 1.2;
+      color: #fff;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      max-width: 960px;
     }
 
-    .hero-sub {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin-bottom: 40px;
+    .hero-v2-title em {
       font-style: italic;
+    }
+
+    .hero-v2-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.72);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .hero-v2-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
     }
 
     .hero-cta {
@@ -195,27 +262,51 @@
       background: #b8923d;
     }
 
-    .slide-dots {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      display: flex;
-      gap: 10px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .dot.active {
+    .hero-cta-primary {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 10px;
       background: var(--gold);
+      color: #fff;
+      border: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: filter 0.2s, transform 0.2s;
+      box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+      text-decoration: none;
+    }
+
+    .hero-cta-primary:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    .hero-cta-secondary {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.2s;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      text-decoration: none;
+    }
+
+    .hero-cta-secondary:hover {
+      background: rgba(255,255,255,0.22);
+      transform: translateY(-2px);
+      color: #fff;
     }
 
     /* QUICK FEATURES BAR */
@@ -1472,23 +1563,46 @@
       data-i18n="navBookNow">Book Now</button>
   </nav>
 
-  <!-- HERO SLIDESHOW -->
+  <!-- HERO VIDEO -->
   <div class="hero" id="hero">
-    <div class="slide active" style="background-image:url('photos/ead8a423-669a-41e5-9002-208b96a1f304.avif')"></div>
-    <div class="slide" style="background-image:url('photos/cf2f6edc-3836-456d-84c6-5b9d679cffb7.avif')"></div>
-    <div class="slide" style="background-image:url('photos/6d5efffb-c0ca-431e-adfb-1129b2b96f8c.avif')"></div>
-    <div class="slide" style="background-image:url('photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif')"></div>
-    <div class="slide" style="background-image:url('photos/87570276-90c0-43fd-8879-9bfa361cf3a2.avif')"></div>
+    <!-- Full-bleed toggle -->
+    <button class="hero-toggle-btn" id="heroToggleBtn" onclick="toggleHeroBleed()" aria-label="Toggle full screen">
+      <svg id="heroToggleIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="4 14 10 14 10 20"></polyline>
+        <polyline points="20 10 14 10 14 4"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+        <line x1="3" y1="21" x2="14" y2="10"></line>
+      </svg>
+    </button>
+
+    <!-- Video background -->
+    <video autoplay loop muted playsinline>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4" type="video/mp4">
+    </video>
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-eyebrow" data-i18n="heroLocation">Montreux, Switzerland</div>
-      <h1 class="hero-title" data-i18n="heroTitle">Le National<br>Montreux</h1>
-      <p class="hero-sub" data-i18n="heroSubtitle">Luxury living on the shores of Lake Geneva</p>
-      <a href="#booking" class="hero-cta" data-i18n="heroReserve"
-        onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'});return false;">Reserve Your
-        Stay</a>
+
+    <!-- Content -->
+    <div class="hero-v2-content">
+      <div class="hero-pill">
+        <span class="hero-pill-badge" data-i18n="heroPillBadge">New</span>
+        <span data-i18n="heroPillText">Direct booking · Best rates guaranteed</span>
+      </div>
+
+      <h1 class="hero-v2-title" data-i18n="heroTitle">
+        Book your perfect stay
+        <br class="hidden-mobile">
+        instantly <em>and</em> hassle-free
+      </h1>
+
+      <p class="hero-v2-sub" data-i18n="heroSubtitle">
+        Le National Montreux — a stunning luxury apartment steps from Lake Geneva. Sweeping views, private spa access, and space for up to 8 guests.
+      </p>
+
+      <div class="hero-v2-ctas">
+        <a href="#booking" class="hero-cta-primary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'});return false;" data-i18n="heroReserve">Reserve Your Stay</a>
+        <a href="#about" class="hero-cta-secondary" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});return false;" data-i18n="heroExplore">Explore the Apartment</a>
+      </div>
     </div>
-    <div class="slide-dots" id="slideDots"></div>
   </div>
 
   <!-- FEATURES BAR -->
@@ -1684,8 +1798,7 @@
 
     <div class="rates-content">
       <div class="rates-header">
-        <p class="rates-eyebrow reveal" data-i18n="ratesLabel">Seasonal Rates</p>
-        <h2 class="rates-heading" id="ratesHeading" data-i18n="ratesTitle">Plans that work best for your stay</h2>
+<h2 class="rates-heading" id="ratesHeading" data-i18n="ratesTitle">Plans that work best for your stay</h2>
         <p class="rates-subtext reveal" data-i18n="ratesSubtext">Transparent pricing, no hidden fees. Book direct for the best rates on Lake Geneva.</p>
         <div class="rates-toggle-wrap reveal">
           <div class="rates-toggle" id="ratesToggle">
@@ -2007,26 +2120,15 @@
       if (e.key === 'ArrowRight') lbNav(1);
     });
 
-    // ─── HERO SLIDESHOW ──────────────────────────────────────────────────────────
-    const slides = document.querySelectorAll('.slide');
-    const dotsContainer = document.getElementById('slideDots');
-    let currentSlide = 0;
-
-    slides.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'dot' + (i === 0 ? ' active' : '');
-      dot.onclick = () => goSlide(i);
-      dotsContainer.appendChild(dot);
-    });
-
-    function goSlide(n) {
-      slides[currentSlide].classList.remove('active');
-      dotsContainer.children[currentSlide].classList.remove('active');
-      currentSlide = n;
-      slides[currentSlide].classList.add('active');
-      dotsContainer.children[currentSlide].classList.add('active');
+    // ─── HERO TOGGLE ─────────────────────────────────────────────────────────────
+    var _heroFull = true;
+    var MINIMIZE_ICON = '<polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="10" y1="14" x2="21" y2="3"></line><line x1="3" y1="21" x2="14" y2="10"></line>';
+    var MAXIMIZE_ICON = '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
+    function toggleHeroBleed() {
+      _heroFull = !_heroFull;
+      document.getElementById('hero').classList.toggle('hero-fit', !_heroFull);
+      document.getElementById('heroToggleIcon').innerHTML = _heroFull ? MINIMIZE_ICON : MAXIMIZE_ICON;
     }
-    setInterval(() => goSlide((currentSlide + 1) % slides.length), 5000);
 
     // ─── PRICING ─────────────────────────────────────────────────────────────────
     const RATES = {
