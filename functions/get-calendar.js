@@ -56,6 +56,13 @@ export async function handleGetCalendar(request, env) {
     });
   }
 
+  if (!icalUrl.startsWith('https://')) {
+    console.error('AIRBNB_ICAL_URL must use https://');
+    return new Response(JSON.stringify({ blockedDates: [] }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
   try {
     const resp = await fetch(icalUrl);
     if (!resp.ok) throw new Error(`iCal fetch failed: ${resp.status}`);

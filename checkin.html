@@ -35,6 +35,31 @@
     border-bottom: 4px solid var(--gold);
   }
 
+  .ci-lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .ci-lang-btn {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, border-color 0.15s, background 0.15s;
+    padding: 0;
+  }
+
+  .ci-lang-btn:hover { transform: scale(1.15); background: rgba(255,255,255,0.2); }
+  .ci-lang-btn.active { border-color: var(--gold-light); background: rgba(212,175,55,0.2); transform: scale(1.1); }
+
   .header h1 {
     font-size: 2rem;
     font-weight: 400;
@@ -671,7 +696,15 @@
 
 <div class="header">
   <h1><span class="gold">Le National</span> de Montreux</h1>
-  <p>Guest Check-in &amp; Document Signing</p>
+  <p data-i18n="ciHeader">Guest Check-in &amp; Document Signing</p>
+  <div class="ci-lang-switcher">
+    <button class="ci-lang-btn lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">🇬🇧</button>
+    <button class="ci-lang-btn lang-btn" data-lang="fr" onclick="setLanguage('fr')" title="Français">🇫🇷</button>
+    <button class="ci-lang-btn lang-btn" data-lang="de" onclick="setLanguage('de')" title="Deutsch">🇩🇪</button>
+    <button class="ci-lang-btn lang-btn" data-lang="ru" onclick="setLanguage('ru')" title="Русский">🇷🇺</button>
+    <button class="ci-lang-btn lang-btn" data-lang="ar" onclick="setLanguage('ar')" title="العربية">🇸🇦</button>
+    <button class="ci-lang-btn lang-btn" data-lang="zh" onclick="setLanguage('zh')" title="中文">🇨🇳</button>
+  </div>
 </div>
 
 <div class="container">
@@ -679,97 +712,97 @@
   <!-- WELCOME / VIDEOS SCREEN -->
   <div class="welcome-screen" id="welcome-screen">
     <div class="welcome-intro">
-      <h2>Welcome to <span style="color:var(--gold)">Le National</span> de Montreux</h2>
-      <p>These short guides will walk you through everything you need to know before your arrival — how to reach the apartment from Montreux train station, how to collect your room keys, and how to access the private garage and Spa &amp; Wellness centre. Please watch all three videos before proceeding to sign your documents.</p>
+      <h2 data-i18n="ciWelcomeTitle">Welcome to Le National de Montreux</h2>
+      <p data-i18n="ciWelcomeDesc">These short guides will walk you through everything you need to know before your arrival — how to reach the apartment from Montreux train station, how to collect your room keys, and how to access the private garage and Spa &amp; Wellness centre. Please watch all three videos before proceeding to sign your documents.</p>
     </div>
 
     <div class="videos-grid">
       <div class="video-card">
         <iframe src="https://drive.google.com/file/d/1AfstBP8sPrbg8yud4uloHQmQY-YiNTBQ/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
-        <div class="video-label">▶ Check-in Guide — Part 1</div>
+        <div class="video-label" data-i18n="ciVideo1">▶ Check-in Guide — Part 1</div>
       </div>
       <div class="video-card">
         <iframe src="https://drive.google.com/file/d/1PV4rPcbdpGEkVTKt37EjuJ1AKKX4vBTn/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
-        <div class="video-label">▶ Check-in Guide — Part 2</div>
+        <div class="video-label" data-i18n="ciVideo2">▶ Check-in Guide — Part 2</div>
       </div>
       <div class="video-card">
         <iframe src="https://drive.google.com/file/d/1I9VD3QIUA8Q5GJAwqbyrRYtoEezo-HLo/preview" allow="autoplay" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
-        <div class="video-label">▶ Check-in Guide — Part 3</div>
+        <div class="video-label" data-i18n="ciVideo3">▶ Check-in Guide — Part 3</div>
       </div>
     </div>
 
     <div class="start-btn-row">
-      <button class="btn-start" onclick="startCheckin()">Proceed to Check-in Documents →</button>
+      <button class="btn-start" onclick="startCheckin()" data-i18n="ciStartBtn">Proceed to Check-in Documents →</button>
     </div>
   </div>
 
   <!-- PROGRESS BAR (hidden until check-in starts) -->
   <div class="progress-bar" id="progress-bar" style="display:none;">
     <div class="progress-step active" onclick="goToStep(1)" id="step-ind-1">
-      <span class="num">1</span> <span>Registration</span>
+      <span class="num">1</span> <span data-i18n="ciStep1">Registration</span>
     </div>
     <div class="progress-step" onclick="goToStep(2)" id="step-ind-2">
-      <span class="num">2</span> <span>Building Rules</span>
+      <span class="num">2</span> <span data-i18n="ciStep2">Building Rules</span>
     </div>
     <div class="progress-step" onclick="goToStep(3)" id="step-ind-3">
-      <span class="num">3</span> <span>Wellness &amp; SPA</span>
+      <span class="num">3</span> <span data-i18n="ciStep3">Wellness &amp; SPA</span>
     </div>
     <div class="progress-step" onclick="goToStep(4)" id="step-ind-4">
-      <span class="num">4</span> <span>Complete</span>
+      <span class="num">4</span> <span data-i18n="ciStep4">Complete</span>
     </div>
   </div>
 
   <!-- STEP 1: Registration Form -->
   <div class="section" id="step-1">
     <div class="section-title">
-      <span class="icon">📋</span> Record of Arrival / Meldeschein / Bulletin d'enregistrement
+      <span class="icon">📋</span><span data-i18n="ciStep1Title"> Record of Arrival / Meldeschein / Bulletin d'enregistrement</span>
     </div>
 
     <div class="form-grid">
       <div class="form-group">
-        <label>Apartment</label>
+        <label data-i18n="ciLabelApartment">Apartment</label>
         <input type="text" id="reg-apt" value="Apt. AR3-1" readonly style="background:#f0efe8; color:#666; cursor:default;">
       </div>
       <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
         <div class="form-group">
-          <label>Arrival</label>
+          <label data-i18n="ciLabelArrival">Arrival</label>
           <input type="date" id="reg-arrival">
         </div>
         <div class="form-group">
-          <label>Departure</label>
+          <label data-i18n="ciLabelDeparture">Departure</label>
           <input type="date" id="reg-departure">
         </div>
       </div>
       <div class="form-group full">
-        <label>Surname, First Name / Nom, Prénom</label>
-        <input type="text" id="reg-name" placeholder="Full name">
+        <label data-i18n="ciLabelName">Surname, First Name / Nom, Prénom</label>
+        <input type="text" id="reg-name" data-i18n-placeholder="ciPlaceholderName" placeholder="Full name">
       </div>
       <div class="form-group full">
-        <label>Street, Number / Rue, Numéro</label>
-        <input type="text" id="reg-street" placeholder="Street address">
+        <label data-i18n="ciLabelStreet">Street, Number / Rue, Numéro</label>
+        <input type="text" id="reg-street" data-i18n-placeholder="ciPlaceholderStreet" placeholder="Street address">
       </div>
       <div class="form-group">
-        <label>ZIP, City / NPA, Localité</label>
-        <input type="text" id="reg-city" placeholder="e.g. 1820 Montreux">
+        <label data-i18n="ciLabelCity">ZIP, City / NPA, Localité</label>
+        <input type="text" id="reg-city" data-i18n-placeholder="ciPlaceholderCity" placeholder="e.g. 1820 Montreux">
       </div>
       <div class="form-group">
-        <label>Passport Nr / N° de passeport</label>
-        <input type="text" id="reg-passport" placeholder="Passport number">
+        <label data-i18n="ciLabelPassport">Passport Nr / N° de passeport</label>
+        <input type="text" id="reg-passport" data-i18n-placeholder="ciPlaceholderPassport" placeholder="Passport number">
       </div>
       <div class="form-group">
-        <label>Date of Birth / Date de naissance</label>
+        <label data-i18n="ciLabelDob">Date of Birth / Date de naissance</label>
         <input type="date" id="reg-dob">
       </div>
       <div class="form-group">
-        <label>Nationality / Nationalité</label>
-        <input type="text" id="reg-nationality" placeholder="Nationality">
+        <label data-i18n="ciLabelNationality">Nationality / Nationalité</label>
+        <input type="text" id="reg-nationality" data-i18n-placeholder="ciPlaceholderNationality" placeholder="Nationality">
       </div>
       <div class="form-group">
-        <label>Adults (16+)</label>
+        <label data-i18n="ciLabelAdults">Adults (16+)</label>
         <input type="number" id="reg-adults" min="1" max="20" value="1">
       </div>
       <div class="form-group">
-        <label>Children (0-15)</label>
+        <label data-i18n="ciLabelChildren">Children (0-15)</label>
         <input type="number" id="reg-kids" min="0" max="20" value="0">
       </div>
       <div class="form-group full">
@@ -779,18 +812,18 @@
     </div>
 
     <div class="sig-section">
-      <div class="sig-label">Signature / Unterschrift</div>
+      <div class="sig-label" data-i18n="ciSigLabel">Signature / Unterschrift</div>
       <div class="sig-wrapper" id="sig-wrap-1">
         <canvas id="sig-1"></canvas>
-        <span class="sig-placeholder">Sign here with your mouse or finger</span>
-        <button class="sig-clear" onclick="clearSig(1)">Clear</button>
+        <span class="sig-placeholder" data-i18n="ciSigPlaceholder1">Sign here with your mouse or finger</span>
+        <button class="sig-clear" onclick="clearSig(1)" data-i18n="ciClear">Clear</button>
       </div>
-      <div class="error-msg" id="err-sig-1">Please provide your signature to continue.</div>
+      <div class="error-msg" id="err-sig-1" data-i18n="ciErrSig1">Please provide your signature to continue.</div>
     </div>
 
     <div class="btn-row">
       <div></div>
-      <button class="btn btn-primary" onclick="nextStep(1)">Continue to Building Rules →</button>
+      <button class="btn btn-primary" onclick="nextStep(1)" data-i18n="ciContinueBuilding">Continue to Building Rules →</button>
     </div>
   </div>
 
@@ -804,7 +837,7 @@
       <span class="dl-label">📄 Full Document:</span>
       <a class="btn-download en" href="Building Rules - English.pdf" download>⬇ English</a>
       <a class="btn-download fr" href="Building Rules - French.pdf" download>⬇ Français</a>
-      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;">Download to read the complete 21-page document</span>
+      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;" data-i18n="ciStep2DownloadNote">Download to read the complete 21-page document</span>
     </div>
 
     <div class="rules-content">
@@ -843,9 +876,9 @@
 
     <div class="acknowledge-box" onclick="toggleCheck(event, 'ack-building')">
       <input type="checkbox" id="ack-building">
-      <label for="ack-building" onclick="event.stopPropagation()">I confirm that I have read and understood the Building Rules (Règlement d'administration et d'utilisation) of the co-ownership Le National de Montreux and I agree to comply with all its provisions during my stay.</label>
+      <label for="ack-building" onclick="event.stopPropagation()" data-i18n="ciAckBuilding">I confirm that I have read and understood the Building Rules (Règlement d'administration et d'utilisation) of the co-ownership Le National de Montreux and I agree to comply with all its provisions during my stay.</label>
     </div>
-    <div class="error-msg" id="err-ack-building">Please confirm that you have read the building rules.</div>
+    <div class="error-msg" id="err-ack-building" data-i18n="ciErrAckBuilding">Please confirm that you have read the building rules.</div>
 
     <div class="sig-date-row">
       <div class="form-group">
@@ -853,19 +886,19 @@
         <input type="text" id="building-date" placeholder="Montreux, 29.03.2026">
       </div>
       <div class="sig-section">
-        <div class="sig-label">Signature</div>
+        <div class="sig-label" data-i18n="ciSigLabel">Signature</div>
         <div class="sig-wrapper" id="sig-wrap-2">
           <canvas id="sig-2"></canvas>
-          <span class="sig-placeholder">Sign here</span>
-          <button class="sig-clear" onclick="clearSig(2)">Clear</button>
+          <span class="sig-placeholder" data-i18n="ciSigPlaceholder">Sign here</span>
+          <button class="sig-clear" onclick="clearSig(2)" data-i18n="ciClear">Clear</button>
         </div>
-        <div class="error-msg" id="err-sig-2">Please provide your signature.</div>
+        <div class="error-msg" id="err-sig-2" data-i18n="ciErrSig">Please provide your signature.</div>
       </div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="nextStep(2)">Continue to Wellness Rules →</button>
+      <button class="btn btn-secondary" onclick="prevStep(2)" data-i18n="ciBack">← Back</button>
+      <button class="btn btn-primary" onclick="nextStep(2)" data-i18n="ciContinueWellness">Continue to Wellness Rules →</button>
     </div>
   </div>
 
@@ -879,7 +912,7 @@
       <span class="dl-label">📄 Full Document:</span>
       <a class="btn-download en" href="Wellness & SPA Rules - English.pdf" download>⬇ English</a>
       <a class="btn-download fr" href="Wellness & SPA Rules - French.pdf" download>⬇ Français</a>
-      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;">Download to read the complete document</span>
+      <span style="font-size:0.78rem; color:#999; font-family:sans-serif; margin-left:0.3rem;" data-i18n="ciStep3DownloadNote">Download to read the complete document</span>
     </div>
 
     <div class="rules-content">
@@ -925,9 +958,9 @@
 
     <div class="acknowledge-box" onclick="toggleCheck(event, 'ack-wellness')">
       <input type="checkbox" id="ack-wellness">
-      <label for="ack-wellness" onclick="event.stopPropagation()">I confirm that I have read and understood the Wellness &amp; SPA Facility Rules and I agree to comply with all its provisions during my stay at Le National de Montreux.</label>
+      <label for="ack-wellness" onclick="event.stopPropagation()" data-i18n="ciAckWellness">I confirm that I have read and understood the Wellness &amp; SPA Facility Rules and I agree to comply with all its provisions during my stay at Le National de Montreux.</label>
     </div>
-    <div class="error-msg" id="err-ack-wellness">Please confirm that you have read the wellness rules.</div>
+    <div class="error-msg" id="err-ack-wellness" data-i18n="ciErrAckWellness">Please confirm that you have read the wellness rules.</div>
 
     <div class="sig-date-row">
       <div class="form-group">
@@ -935,19 +968,19 @@
         <input type="text" id="wellness-date" placeholder="Montreux, 29.03.2026">
       </div>
       <div class="sig-section">
-        <div class="sig-label">Signature du locataire</div>
+        <div class="sig-label" data-i18n="ciSigLabel">Signature du locataire</div>
         <div class="sig-wrapper" id="sig-wrap-3">
           <canvas id="sig-3"></canvas>
-          <span class="sig-placeholder">Sign here</span>
-          <button class="sig-clear" onclick="clearSig(3)">Clear</button>
+          <span class="sig-placeholder" data-i18n="ciSigPlaceholder">Sign here</span>
+          <button class="sig-clear" onclick="clearSig(3)" data-i18n="ciClear">Clear</button>
         </div>
-        <div class="error-msg" id="err-sig-3">Please provide your signature.</div>
+        <div class="error-msg" id="err-sig-3" data-i18n="ciErrSig">Please provide your signature.</div>
       </div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
-      <button class="btn btn-success" onclick="nextStep(3)">✓ Complete Check-in</button>
+      <button class="btn btn-secondary" onclick="prevStep(3)" data-i18n="ciBack">← Back</button>
+      <button class="btn btn-success" onclick="nextStep(3)" data-i18n="ciCompleteCheckin">✓ Complete Check-in</button>
     </div>
   </div>
 
@@ -955,16 +988,16 @@
   <div class="section" id="step-4">
     <div class="completion" id="completion-msg">
       <div class="check-icon">✓</div>
-      <h2>Check-in Complete!</h2>
-      <p>Thank you. All documents have been signed successfully.</p>
+      <h2 data-i18n="ciCompleteTitle">Check-in Complete!</h2>
+      <p data-i18n="ciCompleteDesc">Thank you. All documents have been signed successfully.</p>
       <div class="completion-actions" style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <button class="btn btn-primary" onclick="downloadPDF()" title="Download signed documents as PDF">
+        <button class="btn btn-primary" onclick="downloadPDF()" title="Download signed documents as PDF" data-i18n="ciDownloadPdf">
           📥 Download PDF
         </button>
-        <button class="btn btn-primary" onclick="printDocuments()" title="Print or save to PDF">
+        <button class="btn btn-primary" onclick="printDocuments()" title="Print or save to PDF" data-i18n="ciPrint">
           🖨️ Print / Save
         </button>
-        <button class="btn btn-secondary" onclick="viewSummary()" title="View full summary">
+        <button class="btn btn-secondary" onclick="viewSummary()" title="View full summary" data-i18n="ciViewSummary">
           👁️ View Summary
         </button>
       </div>
@@ -1611,5 +1644,6 @@
     initDates();
   });
 </script>
+<script src="translations.js"></script>
 </body>
 </html>

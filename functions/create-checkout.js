@@ -1,3 +1,29 @@
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const RATES = { high: 400, shoulder: 350, default: 300 };
+const CLEANING_FEE = 100;
+const MIN_NIGHTS = 3;
+
+function getRateForDate(date) {
+  const m = date.getMonth();
+  const d = date.getDate();
+  if (m === 6 || m === 7) return RATES.high;           // July & August
+  if (m === 8) return RATES.shoulder;                   // September
+  if ((m === 10 && d >= 24) || (m === 11 && d <= 25)) return RATES.shoulder; // Nov 24 – Dec 25
+  return RATES.default;
+}
+
+function calcTotal(checkIn, checkOut) {
+  let accommodation = 0;
+  const nights = Math.round((checkOut - checkIn) / 86400000);
+  const cur = new Date(checkIn);
+  for (let i = 0; i < nights; i++) {
+    accommodation += getRateForDate(cur);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return { nights, accommodation, total: accommodation + CLEANING_FEE };
+}
+
 function formatDateReadable(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
@@ -55,22 +81,40 @@ export async function handleCreateCheckout(request, env) {
     });
   }
 
-  const { checkIn, checkOut, guests, nights, totalAmount, guestName, guestEmail } = body;
+  const { checkIn, checkOut, guests, guestName, guestEmail } = body;
 
-  if (!checkIn || !checkOut || !nights || !totalAmount || !guestEmail) {
+  if (!checkIn || !checkOut || !guestEmail) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  const amountInCents = Math.round(Number(totalAmount) * 100);
-  if (!Number.isFinite(amountInCents) || amountInCents <= 0) {
-    return new Response(JSON.stringify({ error: 'Invalid booking amount' }), {
+  if (!DATE_RE.test(checkIn) || !DATE_RE.test(checkOut)) {
+    return new Response(JSON.stringify({ error: 'Invalid date format' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
+
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+  if (isNaN(checkInDate) || isNaN(checkOutDate) || checkOutDate <= checkInDate) {
+    return new Response(JSON.stringify({ error: 'Invalid date range' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  const { nights, total } = calcTotal(checkInDate, checkOutDate);
+  if (nights < MIN_NIGHTS) {
+    return new Response(JSON.stringify({ error: `Minimum stay is ${MIN_NIGHTS} nights` }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  const amountInCents = Math.round(total * 100);
 
   const description = `${nights} night(s) · Check-in: ${formatDateReadable(checkIn)} · Check-out: ${formatDateReadable(checkOut)} · ${guests} guest(s) · Cleaning fee included`;
   const successUrl = `${siteUrl}/checkin.html?booking=success&checkin=${encodeURIComponent(checkIn)}&checkout=${encodeURIComponent(checkOut)}&session_id={CHECKOUT_SESSION_ID}`;
@@ -92,7 +136,7 @@ export async function handleCreateCheckout(request, env) {
   appendParam(params, 'metadata[guest_name]', guestName || '');
   appendParam(params, 'metadata[guest_email]', guestEmail);
   appendParam(params, 'metadata[guests]', guests || '');
-  appendParam(params, 'metadata[nights]', nights);
+  appendParam(params, 'metadata[nights]', String(nights));
   appendParam(params, 'payment_intent_data[description]', `Le National Montreux booking for ${guestEmail}`);
   appendParam(params, 'payment_intent_data[metadata][check_in]', checkIn);
   appendParam(params, 'payment_intent_data[metadata][check_out]', checkOut);
