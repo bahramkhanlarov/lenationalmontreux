@@ -45,7 +45,7 @@ function renderGallery(all) {
   const grid = document.getElementById('galleryGrid');
   const photos = all ? PHOTOS : PHOTOS.slice(0, GALLERY_PREVIEW);
   grid.innerHTML = photos.map((url, i) =>
-    `<img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" onclick="openLightbox(${i})">`
+    `<img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" data-lightbox-index="${i}">`
   ).join('');
   document.getElementById('showMoreBtn').textContent = all ? 'Show Less' : `View All ${PHOTOS.length} Photos`;
   showingAll = all;
@@ -185,7 +185,7 @@ function renderCalendar() {
     }
 
     const clickable = !isPast && !isBlocked;
-    html += `<div class="${cls}" ${clickable ? `onclick="selectDay('${ymd}')"` : ''}>${d}</div>`;
+    html += `<div class="${cls}" ${clickable ? `data-date="${ymd}"` : ''}>${d}</div>`;
   }
   grid.innerHTML = html;
 }
@@ -327,6 +327,67 @@ async function loadBlockedDates() {
   }
 }
 
+function setupEventHandlers() {
+  const galleryGrid = document.getElementById('galleryGrid');
+  if (galleryGrid) {
+    galleryGrid.addEventListener('click', function (event) {
+      const img = event.target.closest('[data-lightbox-index]');
+      if (!img) return;
+      openLightbox(Number(img.dataset.lightboxIndex));
+    });
+  }
+
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    lightbox.addEventListener('click', function (event) {
+      if (event.target === lightbox || event.target.closest('.lb-close')) closeLightbox();
+      if (event.target.closest('.lb-prev')) lbNav(-1);
+      if (event.target.closest('.lb-next')) lbNav(1);
+    });
+  }
+
+  const showMoreBtn = document.getElementById('showMoreBtn');
+  if (showMoreBtn) showMoreBtn.addEventListener('click', showAllPhotos);
+
+  const heroToggleBtn = document.getElementById('heroToggleBtn');
+  if (heroToggleBtn) heroToggleBtn.addEventListener('click', toggleHeroBleed);
+
+  const navBook = document.querySelector('.nav-book');
+  if (navBook) {
+    navBook.addEventListener('click', function () {
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  document.querySelectorAll('a[href="#booking"], a[href="#about"]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  const calGrid = document.getElementById('calGrid');
+  if (calGrid) {
+    calGrid.addEventListener('click', function (event) {
+      const day = event.target.closest('[data-date]');
+      if (!day) return;
+      selectDay(day.dataset.date);
+    });
+  }
+
+  const calButtons = document.querySelectorAll('.cal-header .cal-nav');
+  if (calButtons[0]) calButtons[0].addEventListener('click', prevMonth);
+  if (calButtons[1]) calButtons[1].addEventListener('click', nextMonth);
+
+  const bookButton = document.getElementById('btnBook');
+  if (bookButton) bookButton.addEventListener('click', handleBooking);
+
+  const contactForm = document.querySelector('.contact-form');
+  if (contactForm) contactForm.addEventListener('submit', handleContactSubmit);
+}
+
 // ─── BOOKING HANDLER ─────────────────────────────────────────────────────────
 async function handleBooking() {
   const firstName = document.getElementById('inputFirstName').value.trim();
@@ -376,6 +437,7 @@ async function handleBooking() {
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
+setupEventHandlers();
 renderGallery(false);
 initCalendar();
 
