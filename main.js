@@ -94,9 +94,8 @@ function toggleHeroBleed() {
 
 // ─── PRICING ─────────────────────────────────────────────────────────────────
 const RATES = {
-  high: 400,     // July & August
-  shoulder: 350, // September & Nov 24 – Dec 25
-  default: 300,  // everything else
+  peak: 650,    // May 1 – September 30
+  default: 480, // everything else
 };
 const CLEANING_FEE = 100;
 const MIN_NIGHTS = 3;
@@ -104,10 +103,7 @@ const BOOKING_CUTOFF = new Date(2026, 11, 31); // Dec 31 2026
 
 function getRateForDate(date) {
   const m = date.getMonth();
-  const d = date.getDate();
-  if (m === 6 || m === 7) return RATES.high;
-  if (m === 8) return RATES.shoulder;
-  if ((m === 10 && d >= 24) || (m === 11 && d <= 25)) return RATES.shoulder;
+  if (m >= 4 && m <= 8) return RATES.peak;
   return RATES.default;
 }
 

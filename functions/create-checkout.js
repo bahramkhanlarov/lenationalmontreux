@@ -1,15 +1,12 @@
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-const RATES = { high: 400, shoulder: 350, default: 300 };
+const RATES = { peak: 650, default: 480 };
 const CLEANING_FEE = 100;
 const MIN_NIGHTS = 3;
 
 function getRateForDate(date) {
   const m = date.getMonth();
-  const d = date.getDate();
-  if (m === 6 || m === 7) return RATES.high;           // July & August
-  if (m === 8) return RATES.shoulder;                   // September
-  if ((m === 10 && d >= 24) || (m === 11 && d <= 25)) return RATES.shoulder; // Nov 24 – Dec 25
+  if (m >= 4 && m <= 8) return RATES.peak; // May 1 – September 30
   return RATES.default;
 }
 
