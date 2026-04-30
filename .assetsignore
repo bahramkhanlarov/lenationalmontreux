@@ -1,0 +1,10 @@
+.git
+.github
+.netlify
+.wrangler
+node_modules
+
+.DS_Store
+*.log
+
+wrangler.ci.toml
