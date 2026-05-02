@@ -396,7 +396,7 @@ async function submitCheckinEmail() {
     data = collectFormData();
     const doc = buildPDFDoc(data);
     fileName = pdfFileName(data.name);
-    pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' });
+    pdfBlob = doc.output('blob');
   } catch (err) {
     console.error('PDF build failed:', { message: err.message });
     setStatus('Could not generate PDF. Please try downloading manually.', 'error');
