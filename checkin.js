@@ -391,17 +391,7 @@ async function submitCheckinEmail() {
 
   setStatus('Sending your documents to reception...', 'sending');
 
-  let data, pdfBlob, fileName;
-  try {
-    data = collectFormData();
-    const doc = buildPDFDoc(data);
-    fileName = pdfFileName(data.name);
-    pdfBlob = doc.output('blob');
-  } catch (err) {
-    console.error('PDF build failed:', { message: err.message });
-    setStatus('Could not send documents automatically. Please download the PDF and email it to <strong>info@lenationalmontreux.ch</strong>.', 'error');
-    return;
-  }
+  const data = collectFormData();
 
   const form = new FormData();
   form.append('access_key', WEB3FORMS_ACCESS_KEY);
@@ -416,9 +406,11 @@ async function submitCheckinEmail() {
     `Arrival: ${data.arrival || '—'}\n` +
     `Departure: ${data.departure || '—'}\n` +
     `Nationality: ${data.nationality || '—'}\n` +
-    `Guests: ${data.adults} adults, ${data.kids} children`
+    `Passport: ${data.passport || '—'}\n` +
+    `Date of Birth: ${data.dob || '—'}\n` +
+    `Guests: ${data.adults} adults, ${data.kids} children\n` +
+    `Address: ${data.street || '—'}, ${data.city || '—'}`
   );
-  form.append('attachment', pdfBlob, fileName);
 
   try {
     const resp = await fetch('https://api.web3forms.com/submit', {
@@ -432,7 +424,7 @@ async function submitCheckinEmail() {
     setStatus('Documents sent to reception. Thank you!', 'success');
   } catch (err) {
     console.error('Submit checkin failed:', { message: err.message });
-    setStatus('Web3Forms error: ' + err.message, 'error');
+    setStatus('Could not send notification. Please contact reception directly.', 'error');
   }
 }
 
