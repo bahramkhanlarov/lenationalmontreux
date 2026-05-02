@@ -399,7 +399,7 @@ async function submitCheckinEmail() {
     pdfBlob = doc.output('blob');
   } catch (err) {
     console.error('PDF build failed:', { message: err.message });
-    setStatus('PDF error: ' + err.message, 'error');
+    setStatus('Could not send documents automatically. Please download the PDF and email it to <strong>info@lenationalmontreux.ch</strong>.', 'error');
     return;
   }
 
