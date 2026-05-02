@@ -10,9 +10,12 @@ const translations = {
 
         // Hero
         heroLocation: "Montreux, Switzerland",
+        heroPillBadge: "New",
+        heroPillText: "Direct booking · Best rates guaranteed",
         heroTitle: "Le National Montreux",
         heroSubtitle: "Luxury living on the shores of Lake Geneva",
         heroReserve: "Reserve Your Stay",
+        heroExplore: "Explore the Apartment",
 
         // Features Bar
         featureBedrooms: "2 Bedrooms · Up to 8 Guests",
@@ -179,9 +182,12 @@ const translations = {
 
         // Hero
         heroLocation: "Montreux, Suisse",
+        heroPillBadge: "Nouveau",
+        heroPillText: "Réservation directe · Meilleurs tarifs garantis",
         heroTitle: "Le National Montreux",
         heroSubtitle: "Vie de luxe au bord du Lac Léman",
         heroReserve: "Réservez Votre Séjour",
+        heroExplore: "Découvrir l'Appartement",
 
         // Features Bar
         featureBedrooms: "2 Chambres · Jusqu'à 8 Personnes",
@@ -348,9 +354,12 @@ const translations = {
 
         // Hero
         heroLocation: "Montreux, Schweiz",
+        heroPillBadge: "Neu",
+        heroPillText: "Direktbuchung · Beste Preise garantiert",
         heroTitle: "Le National Montreux",
         heroSubtitle: "Luxusleben am Ufer des Genfer Sees",
         heroReserve: "Reservieren Sie Ihren Aufenthalt",
+        heroExplore: "Die Wohnung Entdecken",
 
         // Features Bar
         featureBedrooms: "2 Schlafzimmer · Bis zu 8 Gäste",
@@ -517,9 +526,12 @@ const translations = {
 
         // Hero
         heroLocation: "Монтрё, Швейцария",
+        heroPillBadge: "Новое",
+        heroPillText: "Прямое бронирование · Лучшие тарифы гарантированы",
         heroTitle: "Le National Монтрё",
         heroSubtitle: "Роскошная жизнь на берегу Женевского озера",
         heroReserve: "Зарезервируйте ваш тур",
+        heroExplore: "Изучить апартаменты",
 
         // Features Bar
         featureBedrooms: "2 спальни · до 8 гостей",
@@ -686,9 +698,12 @@ const translations = {
 
         // Hero
         heroLocation: "مونترو، سويسرا",
+        heroPillBadge: "جديد",
+        heroPillText: "حجز مباشر · أفضل الأسعار مضمونة",
         heroTitle: "Le National مونترو",
         heroSubtitle: "حياة فاخرة على ضفاف بحيرة جنيف",
         heroReserve: "احجز إقامتك",
+        heroExplore: "استكشف الشقة",
 
         // Features Bar
         featureBedrooms: "غرفتا نوم · حتى ٨ ضيوف",
@@ -855,9 +870,12 @@ const translations = {
 
         // Hero
         heroLocation: "蒙特勒，瑞士",
+        heroPillBadge: "新",
+        heroPillText: "直接预订 · 保证最优价格",
         heroTitle: "Le National 蒙特勒",
         heroSubtitle: "日内瓦湖畔的豪华生活",
         heroReserve: "预订您的住宿",
+        heroExplore: "探索公寓",
 
         // Features Bar
         featureBedrooms: "2间卧室 · 最多8位客人",
@@ -1070,11 +1088,27 @@ function updateLanguageSwitcher(lang) {
     });
 }
 
-// Initialize language on page load
+// Wire up language buttons immediately via event delegation (CSP-safe, no inline onclick needed)
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.lang-btn');
+    if (btn) {
+        const targetLang = btn.getAttribute('data-lang');
+        if (targetLang) setLanguage(targetLang);
+    }
+});
+
+// Initialize language on page load and attach click listeners directly to each button
 document.addEventListener('DOMContentLoaded', () => {
     const lang = getLanguage();
     updatePageLanguage(lang);
     updateLanguageSwitcher(lang);
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetLang = btn.getAttribute('data-lang');
+            if (targetLang) setLanguage(targetLang);
+        });
+    });
 });
 
 // Update select options based on language
