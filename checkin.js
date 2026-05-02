@@ -432,10 +432,7 @@ async function submitCheckinEmail() {
     setStatus('Documents sent to reception. Thank you!', 'success');
   } catch (err) {
     console.error('Submit checkin failed:', { message: err.message });
-    setStatus(
-      'Could not send documents automatically. Please download the PDF and email it to <strong>info@lenationalmontreux.ch</strong>.',
-      'error'
-    );
+    setStatus('Web3Forms error: ' + err.message, 'error');
   }
 }
 
