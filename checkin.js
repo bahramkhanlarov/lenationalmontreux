@@ -399,7 +399,7 @@ async function submitCheckinEmail() {
     pdfBlob = doc.output('blob');
   } catch (err) {
     console.error('PDF build failed:', { message: err.message });
-    setStatus('Could not generate PDF. Please try downloading manually.', 'error');
+    setStatus('PDF error: ' + err.message, 'error');
     return;
   }
 
