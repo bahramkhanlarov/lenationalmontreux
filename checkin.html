@@ -417,6 +417,18 @@
   .completion h2 { color: var(--dark); margin-bottom: 0.5rem; }
   .completion p { color: var(--text-light); font-size: 0.95rem; }
 
+  .email-status {
+    margin: 1.2rem auto 0;
+    max-width: 480px;
+    padding: 0.75rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .email-status.sending { background: #fdf8ec; color: #7a6020; border: 1px solid #e0c96e; }
+  .email-status.success  { background: #edf7ed; color: #2e6b30; border: 1px solid #8bc98e; }
+  .email-status.error    { background: #fdecea; color: #9b2020; border: 1px solid #e8a3a3; }
+
   .completion-actions {
     display: flex;
     gap: 1rem;
@@ -1021,6 +1033,7 @@
       <div class="check-icon">✓</div>
       <h2 data-i18n="ciCompleteTitle">Check-in Complete!</h2>
       <p data-i18n="ciCompleteDesc">Thank you. All documents have been signed successfully.</p>
+      <div id="email-status" style="display:none;"></div>
       <div class="completion-actions" style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
         <button class="btn btn-primary" id="btn-download-pdf" title="Download signed documents as PDF" data-i18n="ciDownloadPdf">
           📥 Download PDF

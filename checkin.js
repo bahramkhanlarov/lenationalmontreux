@@ -218,36 +218,40 @@ function validateStep(n) {
 function nextStep(n) {
   if (!validateStep(n)) return;
   showStep(n + 1);
-  if (n + 1 === 4) setTimeout(generatePDF, 300);
+  if (n + 1 === 4) setTimeout(submitCheckinEmail, 300);
 }
 
 function prevStep(n) {
   showStep(n - 1);
 }
 
-// ---- Generate PDF using jsPDF ----
-function generatePDF() {
+// ---- Collect form values ----
+function collectFormData() {
+  return {
+    name: document.getElementById('reg-name').value || 'Guest',
+    apt: document.getElementById('reg-apt').value || '',
+    arrival: document.getElementById('reg-arrival').value || '',
+    departure: document.getElementById('reg-departure').value || '',
+    email: document.getElementById('reg-email').value || '',
+    passport: document.getElementById('reg-passport').value || '',
+    nationality: document.getElementById('reg-nationality').value || '',
+    dob: document.getElementById('reg-dob').value || '',
+    adults: document.getElementById('reg-adults').value || '1',
+    kids: document.getElementById('reg-kids').value || '0',
+    street: document.getElementById('reg-street').value || '',
+    city: document.getElementById('reg-city').value || '',
+    buildingDate: document.getElementById('building-date').value || '',
+    wellnessDate: document.getElementById('wellness-date').value || '',
+    sig1: sigImages[1] || document.getElementById('sig-1').toDataURL('image/png'),
+    sig2: sigImages[2] || document.getElementById('sig-2').toDataURL('image/png'),
+    sig3: sigImages[3] || document.getElementById('sig-3').toDataURL('image/png'),
+  };
+}
+
+// ---- Build jsPDF document ----
+function buildPDFDoc(data) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-
-  const name = document.getElementById('reg-name').value || 'Guest';
-  const apt = document.getElementById('reg-apt').value || '';
-  const arrival = document.getElementById('reg-arrival').value || '';
-  const departure = document.getElementById('reg-departure').value || '';
-  const email = document.getElementById('reg-email').value || '';
-  const passport = document.getElementById('reg-passport').value || '';
-  const nationality = document.getElementById('reg-nationality').value || '';
-  const dob = document.getElementById('reg-dob').value || '';
-  const adults = document.getElementById('reg-adults').value || '1';
-  const kids = document.getElementById('reg-kids').value || '0';
-  const street = document.getElementById('reg-street').value || '';
-  const city = document.getElementById('reg-city').value || '';
-  const buildingDate = document.getElementById('building-date').value || '';
-  const wellnessDate = document.getElementById('wellness-date').value || '';
-
-  const sig1 = sigImages[1] || document.getElementById('sig-1').toDataURL('image/png');
-  const sig2 = sigImages[2] || document.getElementById('sig-2').toDataURL('image/png');
-  const sig3 = sigImages[3] || document.getElementById('sig-3').toDataURL('image/png');
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -323,32 +327,32 @@ function generatePDF() {
   y += 25;
 
   heading('1. Registration / Meldeschein', 13);
-  field('Name', name);
-  field('Apartment', apt);
-  field('Arrival', arrival);
-  field('Departure', departure);
-  field('Address', `${street}, ${city}`);
-  field('Passport Nr', passport);
-  field('Date of Birth', dob);
-  field('Nationality', nationality);
-  field('Guests', `${adults} adults, ${kids} children`);
-  field('Email', email);
+  field('Name', data.name);
+  field('Apartment', data.apt);
+  field('Arrival', data.arrival);
+  field('Departure', data.departure);
+  field('Address', `${data.street}, ${data.city}`);
+  field('Passport Nr', data.passport);
+  field('Date of Birth', data.dob);
+  field('Nationality', data.nationality);
+  field('Guests', `${data.adults} adults, ${data.kids} children`);
+  field('Email', data.email);
   y += 8;
-  signature(sig1);
+  signature(data.sig1);
 
   y += 10;
   heading('2. Building Rules — Acknowledged & Signed', 13);
   paragraph("The guest confirms having read and agreed to the Reglement d'administration et d'utilisation of Le National de Montreux.");
-  field('Lieu et date', buildingDate);
+  field('Lieu et date', data.buildingDate);
   y += 4;
-  signature(sig2);
+  signature(data.sig2);
 
   y += 10;
   heading('3. Wellness & SPA Rules — Acknowledged & Signed', 13);
   paragraph("The guest confirms having read and agreed to the Reglement d'utilisation de l'Espace Fitness/Piscine/Wellness.");
-  field('Lieu et date', wellnessDate);
+  field('Lieu et date', data.wellnessDate);
   y += 4;
-  signature(sig3);
+  signature(data.sig3);
 
   y += 10;
   checkPage(20);
@@ -357,14 +361,75 @@ function generatePDF() {
   doc.setTextColor(150, 150, 150);
   doc.text('Generated: ' + new Date().toLocaleString(), pageWidth / 2, y, { align: 'center' });
 
-  const safeName = name.replace(/[^a-z0-9]/gi, '_');
-  const dateStr = new Date().toISOString().slice(0, 10);
-  doc.save(`Check-in_${safeName}_${dateStr}.pdf`);
+  return doc;
+}
+
+function pdfFileName(name) {
+  const safe = name.replace(/[^a-z0-9]/gi, '_');
+  const date = new Date().toISOString().slice(0, 10);
+  return `Check-in_${safe}_${date}.pdf`;
 }
 
 // ---- Download PDF ----
 function downloadPDF() {
-  generatePDF();
+  const data = collectFormData();
+  const doc = buildPDFDoc(data);
+  doc.save(pdfFileName(data.name));
+}
+
+// ---- Submit PDF by email via Web3Forms ----
+const WEB3FORMS_ACCESS_KEY = '6d5389a0-00de-4e97-aaa5-981cd222bd11';
+
+async function submitCheckinEmail() {
+  const statusEl = document.getElementById('email-status');
+
+  function setStatus(html, className) {
+    statusEl.innerHTML = html;
+    statusEl.className = 'email-status ' + className;
+    statusEl.style.display = 'block';
+  }
+
+  setStatus('Sending your documents to reception...', 'sending');
+
+  const data = collectFormData();
+  const doc = buildPDFDoc(data);
+  const fileName = pdfFileName(data.name);
+  const pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' });
+
+  const form = new FormData();
+  form.append('access_key', WEB3FORMS_ACCESS_KEY);
+  form.append('subject', `New Check-in: ${data.name} — Apt ${data.apt || 'N/A'}`);
+  form.append('from_name', 'Le National Check-in');
+  form.append('name', data.name);
+  form.append('email', data.email || 'noreply@lenationalmontreux.ch');
+  form.append('message',
+    `Guest: ${data.name}\n` +
+    `Email: ${data.email || '—'}\n` +
+    `Apartment: ${data.apt || '—'}\n` +
+    `Arrival: ${data.arrival || '—'}\n` +
+    `Departure: ${data.departure || '—'}\n` +
+    `Nationality: ${data.nationality || '—'}\n` +
+    `Guests: ${data.adults} adults, ${data.kids} children`
+  );
+  form.append('attachment', pdfBlob, fileName);
+
+  try {
+    const resp = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: form,
+    });
+
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.message || `HTTP ${resp.status}`);
+
+    setStatus('Documents sent to reception. Thank you!', 'success');
+  } catch (err) {
+    console.error('Submit checkin failed:', { message: err.message });
+    setStatus(
+      'Could not send documents automatically. Please download the PDF and email it to <strong>info@lenationalmontreux.ch</strong>.',
+      'error'
+    );
+  }
 }
 
 // ---- Print Summary ----
