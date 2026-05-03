@@ -377,9 +377,7 @@ function downloadPDF() {
   doc.save(pdfFileName(data.name));
 }
 
-// ---- Submit PDF by email via Web3Forms ----
-const WEB3FORMS_ACCESS_KEY = '6d5389a0-00de-4e97-aaa5-981cd222bd11';
-
+// ---- Submit PDF by email via Cloudflare Email Worker ----
 async function submitCheckinEmail() {
   const statusEl = document.getElementById('email-status');
 
@@ -391,40 +389,45 @@ async function submitCheckinEmail() {
 
   setStatus('Sending your documents to reception...', 'sending');
 
-  const data = collectFormData();
-
-  const form = new FormData();
-  form.append('access_key', WEB3FORMS_ACCESS_KEY);
-  form.append('subject', `New Check-in: ${data.name} — Apt ${data.apt || 'N/A'}`);
-  form.append('from_name', 'Le National Check-in');
-  form.append('name', data.name);
-  form.append('email', data.email || 'noreply@lenationalmontreux.ch');
-  form.append('message',
-    `Guest: ${data.name}\n` +
-    `Email: ${data.email || '—'}\n` +
-    `Apartment: ${data.apt || '—'}\n` +
-    `Arrival: ${data.arrival || '—'}\n` +
-    `Departure: ${data.departure || '—'}\n` +
-    `Nationality: ${data.nationality || '—'}\n` +
-    `Passport: ${data.passport || '—'}\n` +
-    `Date of Birth: ${data.dob || '—'}\n` +
-    `Guests: ${data.adults} adults, ${data.kids} children\n` +
-    `Address: ${data.street || '—'}, ${data.city || '—'}`
-  );
+  let data, pdfBase64, fileName;
+  try {
+    data = collectFormData();
+    const doc = buildPDFDoc(data);
+    fileName = pdfFileName(data.name);
+    pdfBase64 = doc.output('datauristring').split(',')[1];
+  } catch (err) {
+    console.error('PDF build failed:', { message: err.message });
+    setStatus('Could not generate PDF. Please try downloading manually.', 'error');
+    return;
+  }
 
   try {
-    const resp = await fetch('https://api.web3forms.com/submit', {
+    const resp = await fetch('/submit-checkin', {
       method: 'POST',
-      body: form,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pdfBase64,
+        fileName,
+        guestName: data.name,
+        guestEmail: data.email,
+        apartment: data.apt,
+        arrival: data.arrival,
+        departure: data.departure,
+      }),
     });
 
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.message || `HTTP ${resp.status}`);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${resp.status}`);
+    }
 
     setStatus('Documents sent to reception. Thank you!', 'success');
   } catch (err) {
     console.error('Submit checkin failed:', { message: err.message });
-    setStatus('Could not send notification. Please contact reception directly.', 'error');
+    setStatus(
+      'Could not send documents automatically. Please download the PDF and email it to <strong>info@lenationalmontreux.ch</strong>.',
+      'error'
+    );
   }
 }
 
