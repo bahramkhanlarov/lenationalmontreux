@@ -6,7 +6,6 @@
 
 import { handleGetCalendar } from './functions/get-calendar.js';
 import { handleCreateCheckout } from './functions/create-checkout.js';
-import { handleSubmitCheckin } from './functions/submit-checkin.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -18,10 +17,6 @@ export default {
 
     if (url.pathname === '/create-checkout') {
       return handleCreateCheckout(request, env);
-    }
-
-    if (url.pathname === '/submit-checkin') {
-      return handleSubmitCheckin(request, env);
     }
 
     return env.ASSETS.fetch(request);
