@@ -41,6 +41,18 @@ function getCorsHeaders(request) {
   };
 }
 
+async function fetchBlockedDates(name, url) {
+  if (!url) return [];
+  if (!url.startsWith('https://')) {
+    console.error(`${name} must use https://`);
+    return [];
+  }
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`${name} fetch failed: ${resp.status}`);
+  const ical = await resp.text();
+  return parseBlockedDates(ical);
+}
+
 export async function handleGetCalendar(request, env) {
   const corsHeaders = getCorsHeaders(request);
 
@@ -48,26 +60,13 @@ export async function handleGetCalendar(request, env) {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const icalUrl = env.AIRBNB_ICAL_URL;
-
-  if (!icalUrl) {
-    return new Response(JSON.stringify({ blockedDates: [] }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
-  }
-
-  if (!icalUrl.startsWith('https://')) {
-    console.error('AIRBNB_ICAL_URL must use https://');
-    return new Response(JSON.stringify({ blockedDates: [] }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
-  }
-
   try {
-    const resp = await fetch(icalUrl);
-    if (!resp.ok) throw new Error(`iCal fetch failed: ${resp.status}`);
-    const ical = await resp.text();
-    const blockedDates = parseBlockedDates(ical);
+    const [airbnbDates, vrboDates] = await Promise.all([
+      fetchBlockedDates('AIRBNB_ICAL_URL', env.AIRBNB_ICAL_URL),
+      fetchBlockedDates('VRBO_ICAL_URL', env.VRBO_ICAL_URL),
+    ]);
+
+    const blockedDates = Array.from(new Set([...airbnbDates, ...vrboDates])).sort();
 
     return new Response(JSON.stringify({ blockedDates }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }

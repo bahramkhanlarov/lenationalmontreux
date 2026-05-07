@@ -7,6 +7,9 @@ routes = [
   { pattern = "www.lenationalmontreux.ch", custom_domain = true }
 ]
 
+[vars]
+VRBO_ICAL_URL = "https://www.vrbo.com/icalendar/054bbad66f2d40e285e6d856d4b0258f.ics?nonTentative&includeTentative=true"
+
 [assets]
 directory = "."
 not_found_handling = "single-page-application"
