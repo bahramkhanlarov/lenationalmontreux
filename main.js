@@ -406,6 +406,21 @@ function setupEventHandlers() {
 
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) contactForm.addEventListener('submit', handleContactSubmit);
+
+  const MAX_GUESTS = 8;
+  function enforceGuestLimit(changed, other) {
+    const a = parseInt(document.getElementById('inputAdults').value, 10);
+    const c = parseInt(document.getElementById('inputChildren').value, 10);
+    if (a + c > MAX_GUESTS) {
+      const otherEl = document.getElementById(other);
+      const otherVal = parseInt(otherEl.value, 10);
+      otherEl.value = Math.max(0, MAX_GUESTS - (changed === 'inputAdults' ? a : c));
+    }
+    if (checkInDate && checkOutDate) updatePriceDisplay();
+  }
+  document.getElementById('inputAdults').addEventListener('change', () => enforceGuestLimit('inputAdults', 'inputChildren'));
+  document.getElementById('inputChildren').addEventListener('change', () => enforceGuestLimit('inputChildren', 'inputAdults'));
+  document.getElementById('inputAdults').addEventListener('change', () => { if (checkInDate && checkOutDate) updatePriceDisplay(); });
 }
 
 // ─── BOOKING HANDLER ─────────────────────────────────────────────────────────
