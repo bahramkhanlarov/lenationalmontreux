@@ -1172,12 +1172,10 @@
 
   <script>
     /* ── LOADER ── */
-    window.addEventListener('DOMContentLoaded', function () {
-      setTimeout(function () {
-        document.getElementById('loader').classList.add('gone');
-        document.body.classList.add('ready');
-      }, 1700);
-    });
+    setTimeout(function () {
+      document.getElementById('loader').classList.add('gone');
+      document.body.classList.add('ready');
+    }, 1700);
 
     /* ── VIDEO KEN BURNS ── */
     var vid = document.getElementById('heroVideo');
