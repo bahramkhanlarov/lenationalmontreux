@@ -6,6 +6,7 @@ compatibility_date = "2024-09-23"
 [vars]
 VRBO_ICAL_URL = "https://www.vrbo.com/icalendar/054bbad66f2d40e285e6d856d4b0258f.ics?nonTentative&includeTentative=true"
 AIRBNB_ICAL_URL = "https://www.airbnb.com/calendar/ical/892035101127208845.ics?t=26ec2b72893a416c8c8613955e3baf33"
+BOOKING_ICAL_URL = "https://ical.booking.com/v1/export?t=4b8092a7-6b94-471b-9f14-8ed85bed1aae"
 
 [assets]
 directory = "."

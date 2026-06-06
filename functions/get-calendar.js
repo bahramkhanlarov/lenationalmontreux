@@ -61,12 +61,13 @@ export async function handleGetCalendar(request, env) {
   }
 
   try {
-    const [airbnbDates, vrboDates] = await Promise.all([
+    const [airbnbDates, vrboDates, bookingDates] = await Promise.all([
       fetchBlockedDates('AIRBNB_ICAL_URL', env.AIRBNB_ICAL_URL),
       fetchBlockedDates('VRBO_ICAL_URL', env.VRBO_ICAL_URL),
+      fetchBlockedDates('BOOKING_ICAL_URL', env.BOOKING_ICAL_URL),
     ]);
 
-    const blockedDates = Array.from(new Set([...airbnbDates, ...vrboDates])).sort();
+    const blockedDates = Array.from(new Set([...airbnbDates, ...vrboDates, ...bookingDates])).sort();
 
     return new Response(JSON.stringify({ blockedDates }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' }
