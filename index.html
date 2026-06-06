@@ -606,6 +606,26 @@
       text-align: center; font-size: .68rem;
       color: rgba(221,213,196,.25); margin-top: 11px; letter-spacing: .04em;
     }
+    .promo-row {
+      display: flex; gap: 8px;
+    }
+    .promo-row input { flex: 1; }
+    .promo-row button {
+      background: transparent; border: 1px solid var(--gold-dim);
+      color: var(--gold); padding: 0 18px;
+      font-family: 'Jost', sans-serif; font-size: .68rem;
+      letter-spacing: .14em; text-transform: uppercase;
+      cursor: pointer; white-space: nowrap;
+      transition: background .2s, color .2s, border-color .2s;
+      flex-shrink: 0;
+    }
+    .promo-row button:hover { background: var(--gold); color: var(--void); border-color: var(--gold); }
+    .promo-msg {
+      display: block; font-size: .72rem; margin-top: 5px;
+      min-height: 1em;
+    }
+    .promo-msg.ok  { color: #6dbf8a; }
+    .promo-msg.err { color: #e07070; }
     .stripe-badge {
       display: flex; align-items: center; justify-content: center;
       gap: 6px; margin-top: 8px; font-size: .68rem;
@@ -999,6 +1019,8 @@
                 <option value="4">4 adults</option>
                 <option value="5">5 adults</option>
                 <option value="6">6 adults</option>
+                <option value="7">7 adults</option>
+                <option value="8">8 adults</option>
               </select>
             </div>
             <div class="form-group">
@@ -1009,6 +1031,9 @@
                 <option value="2">2 children</option>
                 <option value="3">3 children</option>
                 <option value="4">4 children</option>
+                <option value="5">5 children</option>
+                <option value="6">6 children</option>
+                <option value="7">7 children</option>
               </select>
             </div>
           </div>
@@ -1033,10 +1058,22 @@
             <label data-i18n="formEmail">Email Address</label>
             <input type="email" id="inputEmail" placeholder="your@email.com">
           </div>
+          <div class="form-group promo-group">
+            <label>Promo Code</label>
+            <div class="promo-row">
+              <input type="text" id="inputPromo" placeholder="Enter code" autocomplete="off" style="text-transform:uppercase">
+              <button type="button" id="btnApplyPromo" onclick="applyPromoCode()">Apply</button>
+            </div>
+            <span class="promo-msg" id="promoMsg"></span>
+          </div>
           <div class="price-summary" id="priceSummary" style="display:none">
             <div class="price-row">
               <span id="priceNightsLabel">Rate × nights</span>
               <span id="priceNightsTotal">CHF —</span>
+            </div>
+            <div class="price-row" id="priceDiscountRow" style="display:none">
+              <span id="priceDiscountLabel">Promo discount</span>
+              <span id="priceDiscount" style="color:#6dbf8a">−CHF —</span>
             </div>
             <div class="price-row">
               <span id="priceCityTaxLabel">City tax</span>

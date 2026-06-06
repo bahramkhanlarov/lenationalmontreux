@@ -155,6 +155,9 @@ const CLEANING_FEE = 150;
 const CITY_TAX_PER_ADULT_NIGHT = 6;
 const MIN_NIGHTS = 3;
 const BOOKING_CUTOFF = new Date(2026, 11, 31); // Dec 31 2026
+const PROMO_CODES = { Q1: 0.10 }; // code → discount fraction on accommodation
+
+let appliedPromo = null; // { code, rate } | null
 
 function getRateForDate(date) {
   const m = date.getMonth();
@@ -162,7 +165,7 @@ function getRateForDate(date) {
   return RATES.default;
 }
 
-function calcTotal(checkIn, checkOut, adults) {
+function calcTotal(checkIn, checkOut, adults, promoRate) {
   let accommodation = 0;
   const nights = Math.round((checkOut - checkIn) / 86400000);
   const cur = new Date(checkIn);
@@ -170,8 +173,9 @@ function calcTotal(checkIn, checkOut, adults) {
     accommodation += getRateForDate(cur);
     cur.setDate(cur.getDate() + 1);
   }
+  const discount = promoRate ? Math.round(accommodation * promoRate) : 0;
   const cityTax = CITY_TAX_PER_ADULT_NIGHT * adults * nights;
-  return { nights, accommodation, cityTax, total: accommodation + cityTax + CLEANING_FEE };
+  return { nights, accommodation, discount, cityTax, total: accommodation - discount + cityTax + CLEANING_FEE };
 }
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
@@ -295,7 +299,8 @@ function selectDay(ymd) {
 function updatePriceDisplay() {
   if (!checkInDate || !checkOutDate) return;
   const adults = parseInt(document.getElementById('inputAdults').value, 10);
-  const { nights, accommodation, cityTax, total } = calcTotal(checkInDate, checkOutDate, adults);
+  const promoRate = appliedPromo ? appliedPromo.rate : 0;
+  const { nights, accommodation, discount, cityTax, total } = calcTotal(checkInDate, checkOutDate, adults, promoRate);
   document.getElementById('inputNights').value = nights;
   document.getElementById('priceNightsLabel').textContent = `Accommodation (${nights} nights)`;
   document.getElementById('priceNightsTotal').textContent = `CHF ${accommodation}`;
@@ -304,6 +309,26 @@ function updatePriceDisplay() {
   document.getElementById('priceTotal').textContent = `CHF ${total}`;
   document.getElementById('priceSummary').style.display = 'block';
   document.getElementById('calStatus').textContent = `${nights} nights selected · CHF ${total} total`;
+  const discountRow = document.getElementById('priceDiscountRow');
+  if (discount > 0) {
+    document.getElementById('priceDiscountLabel').textContent = `Promo (${appliedPromo.code} −${Math.round(appliedPromo.rate * 100)}%)`;
+    document.getElementById('priceDiscount').textContent = `−CHF ${discount}`;
+    discountRow.style.display = 'flex';
+  } else {
+    discountRow.style.display = 'none';
+  }
+}
+
+function applyPromoCode() {
+  const raw = document.getElementById('inputPromo').value.trim().toUpperCase();
+  const msg = document.getElementById('promoMsg');
+  if (!raw) { msg.textContent = 'Please enter a code.'; msg.className = 'promo-msg err'; return; }
+  const rate = PROMO_CODES[raw];
+  if (!rate) { msg.textContent = 'Invalid promo code.'; msg.className = 'promo-msg err'; appliedPromo = null; updatePriceDisplay(); return; }
+  appliedPromo = { code: raw, rate };
+  msg.textContent = `Code applied — ${Math.round(rate * 100)}% off accommodation!`;
+  msg.className = 'promo-msg ok';
+  updatePriceDisplay();
 }
 
 function formatDate(d) {
@@ -456,7 +481,8 @@ async function handleBooking() {
         adults: document.getElementById('inputAdults').value,
         children: document.getElementById('inputChildren').value,
         guestName: `${firstName} ${lastName}`,
-        guestEmail: email
+        guestEmail: email,
+        promoCode: appliedPromo ? appliedPromo.code : null
       })
     });
     const data = await resp.json();

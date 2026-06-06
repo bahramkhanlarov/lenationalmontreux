@@ -4,6 +4,7 @@ const RATES = { peak: 650, default: 480 };
 const CLEANING_FEE = 150;
 const CITY_TAX_PER_ADULT_NIGHT = 6;
 const MIN_NIGHTS = 3;
+const PROMO_CODES = { Q1: 0.10 }; // code → discount fraction on accommodation
 
 function getRateForDate(date) {
   const m = date.getMonth();
@@ -11,7 +12,7 @@ function getRateForDate(date) {
   return RATES.default;
 }
 
-function calcTotal(checkIn, checkOut, adults) {
+function calcTotal(checkIn, checkOut, adults, promoRate) {
   let accommodation = 0;
   const nights = Math.round((checkOut - checkIn) / 86400000);
   const cur = new Date(checkIn);
@@ -19,8 +20,9 @@ function calcTotal(checkIn, checkOut, adults) {
     accommodation += getRateForDate(cur);
     cur.setDate(cur.getDate() + 1);
   }
+  const discount = promoRate ? Math.round(accommodation * promoRate) : 0;
   const cityTax = CITY_TAX_PER_ADULT_NIGHT * adults * nights;
-  return { nights, accommodation, cityTax, total: accommodation + cityTax + CLEANING_FEE };
+  return { nights, accommodation, discount, cityTax, total: accommodation - discount + cityTax + CLEANING_FEE };
 }
 
 function formatDateReadable(dateStr) {
@@ -80,9 +82,10 @@ export async function handleCreateCheckout(request, env) {
     });
   }
 
-  const { checkIn, checkOut, adults: adultsRaw, children: childrenRaw, guestName, guestEmail } = body;
+  const { checkIn, checkOut, adults: adultsRaw, children: childrenRaw, guestName, guestEmail, promoCode } = body;
   const adults = Math.max(1, parseInt(adultsRaw, 10) || 1);
   const children = Math.max(0, parseInt(childrenRaw, 10) || 0);
+  const promoRate = promoCode ? (PROMO_CODES[String(promoCode).toUpperCase()] || 0) : 0;
 
   if (!checkIn || !checkOut || !guestEmail) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -107,7 +110,7 @@ export async function handleCreateCheckout(request, env) {
     });
   }
 
-  const { nights, accommodation, cityTax, total } = calcTotal(checkInDate, checkOutDate, adults);
+  const { nights, accommodation, discount, cityTax, total } = calcTotal(checkInDate, checkOutDate, adults, promoRate);
   if (nights < MIN_NIGHTS) {
     return new Response(JSON.stringify({ error: `Minimum stay is ${MIN_NIGHTS} nights` }), {
       status: 400,
@@ -117,7 +120,8 @@ export async function handleCreateCheckout(request, env) {
 
   const amountInCents = Math.round(total * 100);
 
-  const description = `${nights} night(s) · Check-in: ${formatDateReadable(checkIn)} · Check-out: ${formatDateReadable(checkOut)} · ${adults} adult(s), ${children} child(ren) · City tax CHF ${cityTax} · Cleaning fee CHF ${CLEANING_FEE}`;
+  const promoNote = discount > 0 ? ` · Promo ${promoCode.toUpperCase()} −CHF ${discount}` : '';
+  const description = `${nights} night(s) · Check-in: ${formatDateReadable(checkIn)} · Check-out: ${formatDateReadable(checkOut)} · ${adults} adult(s), ${children} child(ren)${promoNote} · City tax CHF ${cityTax} · Cleaning fee CHF ${CLEANING_FEE}`;
   const successUrl = `${siteUrl}/checkin.html?booking=success&checkin=${encodeURIComponent(checkIn)}&checkout=${encodeURIComponent(checkOut)}&session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${siteUrl}/#booking`;
 
@@ -139,6 +143,7 @@ export async function handleCreateCheckout(request, env) {
   appendParam(params, 'metadata[adults]', String(adults));
   appendParam(params, 'metadata[children]', String(children));
   appendParam(params, 'metadata[nights]', String(nights));
+  if (promoCode) appendParam(params, 'metadata[promo_code]', String(promoCode).toUpperCase());
   appendParam(params, 'payment_intent_data[description]', `Le National Montreux booking for ${guestEmail}`);
   appendParam(params, 'payment_intent_data[metadata][check_in]', checkIn);
   appendParam(params, 'payment_intent_data[metadata][check_out]', checkOut);
