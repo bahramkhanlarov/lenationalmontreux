@@ -179,7 +179,10 @@ let blockedDates = new Set();
 let calSelectStep = 'checkin';
 
 function toYMD(d) {
-  return d.toISOString().split('T')[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 function fromYMD(s) {
   const [y, m, d] = s.split('-').map(Number);
@@ -432,13 +435,6 @@ function setupEventHandlers() {
       selectDay(day.dataset.date);
     });
   }
-
-  const calButtons = document.querySelectorAll('.cal-header .cal-nav');
-  if (calButtons[0]) calButtons[0].addEventListener('click', prevMonth);
-  if (calButtons[1]) calButtons[1].addEventListener('click', nextMonth);
-
-  const bookButton = document.getElementById('btnBook');
-  if (bookButton) bookButton.addEventListener('click', handleBooking);
 
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) contactForm.addEventListener('submit', handleContactSubmit);
