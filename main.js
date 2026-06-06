@@ -59,6 +59,15 @@ const PHOTOS = [
   'photos/IMG_9219.jpg',
   'photos/IMG_9220.jpg',
 ];
+const HERO_PHOTOS = [
+  'photos/405948347.jpg',
+  'photos/398317838.jpg',
+  'photos/398317857.jpg',
+  'photos/398317816.jpg',
+  'photos/IMG_9208.jpg',
+  'photos/IMG_9212.jpg',
+];
+
 const GALLERY_PREVIEW = 9;
 let showingAll = false;
 
@@ -102,6 +111,25 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'ArrowLeft') lbNav(-1);
   if (e.key === 'ArrowRight') lbNav(1);
 });
+
+// ─── HERO SLIDESHOW ──────────────────────────────────────────────────────────
+function initHeroSlideshow() {
+  const container = document.getElementById('heroSlides');
+  if (!container) return;
+  const slides = HERO_PHOTOS.map(function (src, i) {
+    const div = document.createElement('div');
+    div.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    div.style.backgroundImage = 'url(' + src + ')';
+    container.appendChild(div);
+    return div;
+  });
+  let current = 0;
+  setInterval(function () {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 6000);
+}
 
 // ─── HERO TOGGLE ─────────────────────────────────────────────────────────────
 var _heroFull = true;
@@ -369,6 +397,8 @@ function setupEventHandlers() {
 
   const showMoreBtn = document.getElementById('showMoreBtn');
   if (showMoreBtn) showMoreBtn.addEventListener('click', showAllPhotos);
+
+  initHeroSlideshow();
 
   const heroToggleBtn = document.getElementById('heroToggleBtn');
   if (heroToggleBtn) heroToggleBtn.addEventListener('click', toggleHeroBleed);

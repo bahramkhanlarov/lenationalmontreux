@@ -168,14 +168,13 @@
       transition: min-height .5s;
     }
     .hero.hero-fit { min-height: 0; }
-    .hero video {
+    .hero-slides { position: absolute; inset: 0; z-index: 0; }
+    .hero-slide {
       position: absolute; inset: 0;
-      width: 100%; height: 100%; object-fit: cover;
-      z-index: 0;
-      transform: scale(1.07);
-      transition: transform 9s var(--ease);
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 1.8s ease;
     }
-    .hero video.ready { transform: scale(1); }
+    .hero-slide.active { opacity: 1; }
     .hero-overlay {
       position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(
@@ -845,10 +844,7 @@
       </svg>
     </button>
 
-    <video autoplay loop muted playsinline id="heroVideo"
-      poster="photos/00766406-822d-4e20-a133-222af49cc3c7.avif">
-      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4" type="video/mp4">
-    </video>
+    <div id="heroSlides" class="hero-slides"></div>
     <div class="hero-overlay"></div>
 
     <div class="hero-content" id="heroContent">
