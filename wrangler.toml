@@ -9,6 +9,10 @@ AIRBNB_ICAL_URL = "https://www.airbnb.com/calendar/ical/892035101127208845.ics?t
 BOOKING_ICAL_URL = "https://ical.booking.com/v1/export?t=4b8092a7-6b94-471b-9f14-8ed85bed1aae"
 STRIPE_PUBLISHABLE_KEY = "pk_live_51TbOOsLSCClCtUPqlwT9MrO1bifglhW6M5sWDZSgmqj4EnjrL6k5cyVis3hviaaNlTeKBvk9xKvusMLQFFw4UMRH00agDO2SLI"
 
+[[kv_namespaces]]
+binding = "BOOKINGS_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
 [assets]
 directory = "."
 not_found_handling = "single-page-application"
