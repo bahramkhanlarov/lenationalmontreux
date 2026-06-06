@@ -66,7 +66,7 @@ function renderGallery(all) {
   const grid = document.getElementById('galleryGrid');
   const photos = all ? PHOTOS : PHOTOS.slice(0, GALLERY_PREVIEW);
   grid.innerHTML = photos.map((url, i) =>
-    `<img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" data-lightbox-index="${i}">`
+    `<div class="gallery-item"><img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" data-lightbox-index="${i}"></div>`
   ).join('');
   document.getElementById('showMoreBtn').textContent = all ? 'Show Less' : `View All ${PHOTOS.length} Photos`;
   showingAll = all;
