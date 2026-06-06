@@ -151,7 +151,8 @@ const RATES = {
   peak: 650,    // May 1 – September 30
   default: 480, // everything else
 };
-const CLEANING_FEE = 100;
+const CLEANING_FEE = 150;
+const CITY_TAX_PER_ADULT_NIGHT = 6;
 const MIN_NIGHTS = 3;
 const BOOKING_CUTOFF = new Date(2026, 11, 31); // Dec 31 2026
 
@@ -161,15 +162,16 @@ function getRateForDate(date) {
   return RATES.default;
 }
 
-function calcTotal(checkIn, checkOut) {
-  let total = 0;
+function calcTotal(checkIn, checkOut, adults) {
+  let accommodation = 0;
   const nights = Math.round((checkOut - checkIn) / 86400000);
   const cur = new Date(checkIn);
   for (let i = 0; i < nights; i++) {
-    total += getRateForDate(cur);
+    accommodation += getRateForDate(cur);
     cur.setDate(cur.getDate() + 1);
   }
-  return { nights, nightly: total, total: total + CLEANING_FEE };
+  const cityTax = CITY_TAX_PER_ADULT_NIGHT * adults * nights;
+  return { nights, accommodation, cityTax, total: accommodation + cityTax + CLEANING_FEE };
 }
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
@@ -292,10 +294,13 @@ function selectDay(ymd) {
 
 function updatePriceDisplay() {
   if (!checkInDate || !checkOutDate) return;
-  const { nights, nightly, total } = calcTotal(checkInDate, checkOutDate);
+  const adults = parseInt(document.getElementById('inputAdults').value, 10);
+  const { nights, accommodation, cityTax, total } = calcTotal(checkInDate, checkOutDate, adults);
   document.getElementById('inputNights').value = nights;
   document.getElementById('priceNightsLabel').textContent = `Accommodation (${nights} nights)`;
-  document.getElementById('priceNightsTotal').textContent = `CHF ${nightly}`;
+  document.getElementById('priceNightsTotal').textContent = `CHF ${accommodation}`;
+  document.getElementById('priceCityTaxLabel').textContent = `City tax (${adults} adult${adults > 1 ? 's' : ''} × ${nights} nights)`;
+  document.getElementById('priceCityTax').textContent = `CHF ${cityTax}`;
   document.getElementById('priceTotal').textContent = `CHF ${total}`;
   document.getElementById('priceSummary').style.display = 'block';
   document.getElementById('calStatus').textContent = `${nights} nights selected · CHF ${total} total`;
@@ -433,7 +438,8 @@ async function handleBooking() {
       body: JSON.stringify({
         checkIn: toYMD(checkInDate),
         checkOut: toYMD(checkOutDate),
-        guests: document.getElementById('inputGuests').value,
+        adults: document.getElementById('inputAdults').value,
+        children: document.getElementById('inputChildren').value,
         guestName: `${firstName} ${lastName}`,
         guestEmail: email
       })
