@@ -254,14 +254,14 @@ function selectDay(ymd) {
     checkOutDate = null;
     calSelectStep = 'checkout';
     document.getElementById('calStatus').textContent = 'Now select your check-out date';
-    document.getElementById('inputCheckIn').value = toYMD(date);
+    document.getElementById('inputCheckIn').value = formatDate(date);
     document.getElementById('inputCheckOut').value = '';
     document.getElementById('inputNights').value = '';
     document.getElementById('priceSummary').style.display = 'none';
   } else {
     if (date <= checkInDate) {
       checkInDate = date; checkOutDate = null; calSelectStep = 'checkout';
-      document.getElementById('inputCheckIn').value = toYMD(date);
+      document.getElementById('inputCheckIn').value = formatDate(date);
       document.getElementById('inputCheckOut').value = '';
       document.getElementById('calStatus').textContent = 'Now select your check-out date';
       renderCalendar(); return;
@@ -284,7 +284,7 @@ function selectDay(ymd) {
     checkOutDate = date;
     calSelectStep = 'checkin';
     document.getElementById('calStatus').className = 'cal-status';
-    document.getElementById('inputCheckOut').value = toYMD(date);
+    document.getElementById('inputCheckOut').value = formatDate(date);
     updatePriceDisplay();
   }
   renderCalendar();
@@ -305,68 +305,6 @@ function formatDate(d) {
   return d.toLocaleDateString('en-CH', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-document.getElementById('inputCheckIn').addEventListener('change', function () {
-  const val = this.value;
-  if (!val) { checkInDate = null; checkOutDate = null; renderCalendar(); return; }
-  const [y, m, d] = val.split('-').map(Number);
-  const parsed = new Date(y, m - 1, d);
-  if (parsed > BOOKING_CUTOFF || parsed < today()) {
-    this.value = '';
-    document.getElementById('calStatus').className = 'cal-status cal-error';
-    document.getElementById('calStatus').textContent = 'That date is not available.';
-    return;
-  }
-  if (blockedDates.has(toYMD(parsed))) {
-    this.value = '';
-    document.getElementById('calStatus').className = 'cal-status cal-error';
-    document.getElementById('calStatus').textContent = 'That date is already booked — please choose another.';
-    return;
-  }
-  checkInDate = parsed;
-  checkOutDate = null;
-  calSelectStep = 'checkout';
-  document.getElementById('inputCheckOut').value = '';
-  document.getElementById('inputNights').value = '';
-  document.getElementById('priceSummary').style.display = 'none';
-  document.getElementById('calStatus').className = 'cal-status';
-  document.getElementById('calStatus').textContent = 'Now select your check-out date';
-  calYear = y; calMonth = m - 1;
-  renderCalendar();
-});
-
-document.getElementById('inputCheckOut').addEventListener('change', function () {
-  const val = this.value;
-  if (!val || !checkInDate) { checkOutDate = null; renderCalendar(); return; }
-  const [y, m, d] = val.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const nights = Math.round((date - checkInDate) / 86400000);
-  if (date <= checkInDate || nights < MIN_NIGHTS) {
-    this.value = '';
-    document.getElementById('calStatus').className = 'cal-status cal-error';
-    document.getElementById('calStatus').textContent = `Minimum stay is ${MIN_NIGHTS} nights.`;
-    checkOutDate = null;
-    renderCalendar();
-    return;
-  }
-  const cur = new Date(checkInDate); cur.setDate(cur.getDate() + 1);
-  while (cur < date) {
-    if (blockedDates.has(toYMD(cur))) {
-      this.value = '';
-      document.getElementById('calStatus').className = 'cal-status cal-error';
-      document.getElementById('calStatus').textContent = 'Dates include unavailable nights — please choose a different range.';
-      checkOutDate = null;
-      renderCalendar();
-      return;
-    }
-    cur.setDate(cur.getDate() + 1);
-  }
-  checkOutDate = date;
-  calSelectStep = 'checkin';
-  document.getElementById('calStatus').className = 'cal-status';
-  document.getElementById('calStatus').textContent = '';
-  updatePriceDisplay();
-  renderCalendar();
-});
 
 // ─── CONTACT FORM ────────────────────────────────────────────────────────────
 async function handleContactSubmit(event) {
