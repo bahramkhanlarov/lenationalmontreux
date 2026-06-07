@@ -28,8 +28,7 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
   return computed === signature;
 }
 
-export async function onRequest(context) {
-  const { request, env } = context;
+export async function handleStripeWebhook(request, env) {
 
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });

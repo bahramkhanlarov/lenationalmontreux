@@ -6,6 +6,8 @@
 
 import { handleGetCalendar } from './functions/get-calendar.js';
 import { handleCreateCheckout } from './functions/create-checkout.js';
+import { handleIcal } from './functions/ical.js';
+import { handleStripeWebhook } from './functions/stripe-webhook.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -17,6 +19,14 @@ export default {
 
     if (url.pathname === '/create-checkout') {
       return handleCreateCheckout(request, env);
+    }
+
+    if (url.pathname === '/ical') {
+      return handleIcal(request, env);
+    }
+
+    if (url.pathname === '/stripe-webhook') {
+      return handleStripeWebhook(request, env);
     }
 
     return env.ASSETS.fetch(request);

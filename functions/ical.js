@@ -14,9 +14,7 @@ function dtstamp() {
   return new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
 }
 
-export async function onRequest(context) {
-  const { env } = context;
-
+export async function handleIcal(request, env) {
   if (!env.BOOKINGS_KV) {
     return new Response('KV not configured', { status: 500 });
   }
