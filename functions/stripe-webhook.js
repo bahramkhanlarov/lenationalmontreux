@@ -162,8 +162,9 @@ async function sendConfirmationEmail(booking, resendApiKey) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Le National Montreux <bookings@lenationalmontreux.ch>',
+      from: 'Le National Montreux <info@lenationalmontreux.ch>',
       to: [booking.guestEmail],
+      bcc: ['info@lenationalmontreux.ch'],
       subject: `Booking Confirmed – Le National Montreux · ${formatDateReadable(booking.checkIn)}`,
       html,
     }),
