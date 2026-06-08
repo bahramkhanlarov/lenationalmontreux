@@ -377,8 +377,11 @@ function downloadPDF() {
   doc.save(pdfFileName(data.name));
 }
 
-// ---- Submit PDF by email via Web3Forms ----
-const WEB3FORMS_ACCESS_KEY = '6d5389a0-00de-4e97-aaa5-981cd222bd11';
+// ---- Submit signed PDF by email to reception ----
+function pdfToBase64(doc) {
+  // doc.output('datauristring') => "data:application/pdf;...;base64,<DATA>"
+  return doc.output('datauristring').split(',')[1];
+}
 
 async function submitCheckinEmail() {
   const statusEl = document.getElementById('email-status');
@@ -392,34 +395,22 @@ async function submitCheckinEmail() {
   setStatus('Sending your documents to reception...', 'sending');
 
   const data = collectFormData();
+  const doc = buildPDFDoc(data);
+  const pdfBase64 = pdfToBase64(doc);
+  const fileName = pdfFileName(data.name);
 
-  const form = new FormData();
-  form.append('access_key', WEB3FORMS_ACCESS_KEY);
-  form.append('subject', `New Check-in: ${data.name} — Apt ${data.apt || 'N/A'}`);
-  form.append('from_name', 'Le National Check-in');
-  form.append('name', data.name);
-  form.append('email', data.email || 'noreply@lenationalmontreux.ch');
-  form.append('message',
-    `Guest: ${data.name}\n` +
-    `Email: ${data.email || '—'}\n` +
-    `Apartment: ${data.apt || '—'}\n` +
-    `Arrival: ${data.arrival || '—'}\n` +
-    `Departure: ${data.departure || '—'}\n` +
-    `Nationality: ${data.nationality || '—'}\n` +
-    `Passport: ${data.passport || '—'}\n` +
-    `Date of Birth: ${data.dob || '—'}\n` +
-    `Guests: ${data.adults} adults, ${data.kids} children\n` +
-    `Address: ${data.street || '—'}, ${data.city || '—'}`
-  );
+  // Signatures are already embedded in the PDF; omit them from the JSON metadata.
+  const { sig1, sig2, sig3, ...meta } = data;
 
   try {
-    const resp = await fetch('https://api.web3forms.com/submit', {
+    const resp = await fetch('/submit-checkin', {
       method: 'POST',
-      body: form,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: meta, pdfBase64, fileName }),
     });
 
     const result = await resp.json();
-    if (!result.success) throw new Error(result.message || `HTTP ${resp.status}`);
+    if (!resp.ok || !result.success) throw new Error(result.error || `HTTP ${resp.status}`);
 
     setStatus('Documents sent to reception. Thank you!', 'success');
   } catch (err) {
