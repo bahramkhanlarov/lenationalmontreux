@@ -15,4 +15,5 @@ id = "e3efa7ca0a6e432eaa2cda79c633c79d"
 
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "single-page-application"

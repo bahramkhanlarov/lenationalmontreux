@@ -2,9 +2,14 @@
 .github
 .netlify
 .wrangler
+.claude
+.agents
+.gstack
 node_modules
 
 .DS_Store
 *.log
 
 wrangler.ci.toml
+skills-lock.json
+FULL-AUDIT-REPORT.md
