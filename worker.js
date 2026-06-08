@@ -13,6 +13,12 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    if (url.hostname.startsWith('www.')) {
+      const canonical = new URL(request.url);
+      canonical.hostname = canonical.hostname.slice(4);
+      return Response.redirect(canonical.toString(), 301);
+    }
+
     if (url.pathname === '/get-calendar') {
       return handleGetCalendar(request, env);
     }
