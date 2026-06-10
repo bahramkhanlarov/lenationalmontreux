@@ -412,7 +412,7 @@ async function submitCheckinEmail() {
     const result = await resp.json();
     if (!resp.ok || !result.success) throw new Error(result.error || `HTTP ${resp.status}`);
 
-    setStatus('Documents sent to reception. Thank you!', 'success');
+    setStatus('Documents sent to reception. Thank you!<br><br>Enjoyed your stay? <a href="https://g.page/r/CS9qcl0kZsYIEAI/review" target="_blank" rel="noopener" style="color:#c9a84c;font-weight:600;">Leave us a Google review</a> — it means the world to us.<br><br><span style="font-size:0.9em;opacity:0.8;">This property is managed by <a href="https://www.rivierahost.ch" target="_blank" rel="noopener" style="color:#c9a84c;">RivieraHost</a> · <a href="https://g.page/r/CS9qcl0kZsYIEAI/review" target="_blank" rel="noopener" style="color:#c9a84c;">Google Profile</a></span>', 'success');
   } catch (err) {
     console.error('Submit checkin failed:', { message: err.message });
     setStatus('Could not send notification. Please contact reception directly.', 'error');
