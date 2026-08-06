@@ -122,7 +122,7 @@ const translations = {
         // Check-in page
         ciHeader: "Guest Check-in & Document Signing",
         ciWelcomeTitle: "Welcome to Le National de Montreux",
-        ciWelcomeDesc: "These short guides will walk you through everything you need to know before your arrival — how to reach the apartment from Montreux train station, how to collect your room keys, and how to access the private garage and Spa & Wellness centre. Please watch all three videos before proceeding to sign your documents.",
+        ciWelcomeDesc: "These short guides will walk you through everything you need to know before your arrival — how to reach the apartment from Montreux train station, how to collect your room keys, and how to access the private garage. Please watch both videos before proceeding to sign your documents.",
         ciVideo1: "▶ Check-in Guide — Part 1",
         ciVideo2: "▶ Check-in Guide — Part 2",
         ciVideo3: "▶ Check-in Guide — Part 3",
@@ -294,7 +294,7 @@ const translations = {
         // Check-in page
         ciHeader: "Enregistrement des Hôtes & Signature des Documents",
         ciWelcomeTitle: "Bienvenue au Le National de Montreux",
-        ciWelcomeDesc: "Ces courtes vidéos vous guideront à travers tout ce que vous devez savoir avant votre arrivée — comment rejoindre l'appartement depuis la gare de Montreux, comment récupérer vos clés, et comment accéder au garage privé et au centre Spa & Wellness. Veuillez regarder les trois vidéos avant de signer vos documents.",
+        ciWelcomeDesc: "Ces courtes vidéos vous guideront à travers tout ce que vous devez savoir avant votre arrivée — comment rejoindre l'appartement depuis la gare de Montreux, comment récupérer vos clés, et comment accéder au garage privé. Veuillez regarder les deux vidéos avant de signer vos documents.",
         ciVideo1: "▶ Guide d'Arrivée — Partie 1",
         ciVideo2: "▶ Guide d'Arrivée — Partie 2",
         ciVideo3: "▶ Guide d'Arrivée — Partie 3",
@@ -466,7 +466,7 @@ const translations = {
         // Check-in page
         ciHeader: "Gäste-Check-in & Dokumentenunterzeichnung",
         ciWelcomeTitle: "Willkommen im Le National de Montreux",
-        ciWelcomeDesc: "Diese kurzen Videos führen Sie durch alles, was Sie vor Ihrer Ankunft wissen müssen — wie Sie die Wohnung vom Bahnhof Montreux erreichen, wie Sie Ihre Schlüssel abholen und wie Sie auf die private Garage und das Spa & Wellness-Zentrum zugreifen. Bitte schauen Sie alle drei Videos, bevor Sie Ihre Dokumente unterzeichnen.",
+        ciWelcomeDesc: "Diese kurzen Videos führen Sie durch alles, was Sie vor Ihrer Ankunft wissen müssen — wie Sie die Wohnung vom Bahnhof Montreux erreichen, wie Sie Ihre Schlüssel abholen und wie Sie auf die private Garage zugreifen. Bitte schauen Sie sich beide Videos an, bevor Sie Ihre Dokumente unterzeichnen.",
         ciVideo1: "▶ Check-in Guide — Teil 1",
         ciVideo2: "▶ Check-in Guide — Teil 2",
         ciVideo3: "▶ Check-in Guide — Teil 3",
@@ -638,7 +638,7 @@ const translations = {
         // Check-in page
         ciHeader: "Регистрация гостей и подписание документов",
         ciWelcomeTitle: "Добро пожаловать в Le National de Montreux",
-        ciWelcomeDesc: "Эти короткие видео расскажут вам всё необходимое перед приездом — как добраться до апартаментов от вокзала Монтрё, как получить ключи и как попасть в частный гараж и Spa & Wellness-центр. Пожалуйста, посмотрите все три видео перед подписанием документов.",
+        ciWelcomeDesc: "Эти короткие видео расскажут вам всё необходимое перед приездом — как добраться до апартаментов от вокзала Монтрё, как получить ключи и как попасть в частный гараж. Пожалуйста, посмотрите оба видео перед подписанием документов.",
         ciVideo1: "▶ Руководство по заезду — Часть 1",
         ciVideo2: "▶ Руководство по заезду — Часть 2",
         ciVideo3: "▶ Руководство по заезду — Часть 3",
@@ -810,7 +810,7 @@ const translations = {
         // Check-in page
         ciHeader: "تسجيل وصول الضيوف وتوقيع الوثائق",
         ciWelcomeTitle: "مرحباً بكم في Le National de Montreux",
-        ciWelcomeDesc: "تُرشدكم هذه الفيديوهات القصيرة إلى كل ما تحتاجون معرفته قبل وصولكم — كيفية الوصول إلى الشقة من محطة قطار مونترو، وكيفية استلام المفاتيح، والوصول إلى الكراج الخاص ومركز سبا والعافية. يرجى مشاهدة الفيديوهات الثلاثة قبل توقيع الوثائق.",
+        ciWelcomeDesc: "تُرشدكم هذه الفيديوهات القصيرة إلى كل ما تحتاجون معرفته قبل وصولكم — كيفية الوصول إلى الشقة من محطة قطار مونترو، وكيفية استلام المفاتيح، والوصول إلى الكراج الخاص. يرجى مشاهدة الفيديوهين قبل توقيع الوثائق.",
         ciVideo1: "▶ دليل تسجيل الوصول — الجزء ١",
         ciVideo2: "▶ دليل تسجيل الوصول — الجزء ٢",
         ciVideo3: "▶ دليل تسجيل الوصول — الجزء ٣",
@@ -982,7 +982,7 @@ const translations = {
         // Check-in page
         ciHeader: "宾客入住登记及文件签署",
         ciWelcomeTitle: "欢迎来到 Le National de Montreux",
-        ciWelcomeDesc: "这些简短的视频将带您了解抵达前需要知道的一切 — 如何从蒙特勒火车站到达公寓、如何领取钥匙，以及如何进入私人车库和 Spa & 健康中心。请在签署文件之前观看所有三个视频。",
+        ciWelcomeDesc: "这些简短的视频将带您了解抵达前需要知道的一切 — 如何从蒙特勒火车站到达公寓、如何领取钥匙，以及如何进入私人车库。请在签署文件之前观看这两个视频。",
         ciVideo1: "▶ 入住指南 — 第 1 部分",
         ciVideo2: "▶ 入住指南 — 第 2 部分",
         ciVideo3: "▶ 入住指南 — 第 3 部分",
