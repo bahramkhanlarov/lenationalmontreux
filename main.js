@@ -49,11 +49,11 @@ const PHOTOS = [
   'photos/2d333ca3-f2ea-488f-9586-9f5479396dfc.avif',
 ];
 const HERO_PHOTOS = [
-  'photos/IMG_9209.jpg',
-  'photos/IMG_9211.jpg',
-  'photos/IMG_9215.jpg',
-  'photos/IMG_9208.jpg',
-  'photos/IMG_9212.jpg',
+  'photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif',
+  'photos/8e79966c-5594-4d31-b084-762bd4c7e997.avif',
+  'photos/00766406-822d-4e20-a133-222af49cc3c7.avif',
+  'photos/cf2f6edc-3836-456d-84c6-5b9d679cffb7.avif',
+  'photos/87570276-90c0-43fd-8879-9bfa361cf3a2.avif',
 ];
 
 const GALLERY_PREVIEW = 9;
