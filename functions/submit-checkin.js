@@ -13,6 +13,7 @@ const DEFAULT_RECEPTION_EMAIL = 'info@lenationalmontreux.ch';
 const DEFAULT_FROM_EMAIL = 'checkin@lenationalmontreux.ch';
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const MAX_ATTEMPTS = 3;
+const MAX_PASSPORT_FILE_BYTES = 8 * 1024 * 1024; // 8 MB, matches client-side limit
 
 function getCorsHeaders(request) {
   const origin = request.headers.get('Origin');
@@ -40,7 +41,7 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
-function buildEmailHtml(data) {
+function buildEmailHtml(data, hasPassportFile) {
   const row = (label, value) =>
     `<tr><td style="padding:4px 12px 4px 0;color:#666;font-weight:bold;">${escapeHtml(label)}</td>` +
     `<td style="padding:4px 0;color:#222;">${escapeHtml(value)}</td></tr>`;
@@ -61,7 +62,9 @@ function buildEmailHtml(data) {
     row('Guests', `${data.adults || '1'} adults, ${data.kids || '0'} children`) +
     row('Address', `${data.street || '—'}, ${data.city || '—'}`) +
     `</table>` +
-    `<p style="color:#666;font-size:13px;margin-top:16px;">The signed check-in summary is attached as a PDF.</p>` +
+    `<p style="color:#666;font-size:13px;margin-top:16px;">The signed check-in summary is attached as a PDF` +
+    (hasPassportFile ? ', along with a photo/scan of the guest’s passport.' : '.') +
+    `</p>` +
     `</div>`
   );
 }
@@ -118,12 +121,34 @@ export async function handleSubmitCheckin(request, env) {
     return jsonResponse({ error: 'Invalid request body' }, 400, corsHeaders);
   }
 
-  const { data, pdfBase64, fileName } = body;
+  const { data, pdfBase64, fileName, passportFileBase64, passportFileName, passportFileType } = body;
   if (!data || typeof data !== 'object') {
     return jsonResponse({ error: 'Missing check-in data' }, 400, corsHeaders);
   }
   if (!pdfBase64 || typeof pdfBase64 !== 'string') {
     return jsonResponse({ error: 'Missing PDF attachment' }, 400, corsHeaders);
+  }
+
+  let passportAttachment = null;
+  if (passportFileBase64 !== undefined && passportFileBase64 !== null) {
+    if (typeof passportFileBase64 !== 'string') {
+      return jsonResponse({ error: 'Invalid passport file' }, 400, corsHeaders);
+    }
+    const isImage = typeof passportFileType === 'string' && passportFileType.startsWith('image/');
+    const isPdf = passportFileType === 'application/pdf';
+    if (!isImage && !isPdf) {
+      return jsonResponse({ error: 'Passport file must be an image or PDF' }, 400, corsHeaders);
+    }
+    // Base64 decodes to roughly 3/4 of its encoded length.
+    const approxBytes = Math.ceil((passportFileBase64.length * 3) / 4);
+    if (approxBytes > MAX_PASSPORT_FILE_BYTES) {
+      return jsonResponse({ error: 'Passport file exceeds 8 MB limit' }, 400, corsHeaders);
+    }
+    const extension = isPdf ? 'pdf' : (passportFileType.split('/')[1] || 'jpg');
+    passportAttachment = {
+      filename: typeof passportFileName === 'string' && passportFileName.trim() ? passportFileName : `passport.${extension}`,
+      content: passportFileBase64,
+    };
   }
 
   const receptionEmail = env.RECEPTION_EMAIL || DEFAULT_RECEPTION_EMAIL;
@@ -135,12 +160,13 @@ export async function handleSubmitCheckin(request, env) {
     from: `Le National Check-in <${fromEmail}>`,
     to: [receptionEmail],
     subject: `New Check-in: ${guestName} — Apt ${apartment}`,
-    html: buildEmailHtml(data),
+    html: buildEmailHtml(data, !!passportAttachment),
     attachments: [
       {
         filename: typeof fileName === 'string' && fileName.endsWith('.pdf') ? fileName : 'check-in.pdf',
         content: pdfBase64,
       },
+      ...(passportAttachment ? [passportAttachment] : []),
     ],
   };
 

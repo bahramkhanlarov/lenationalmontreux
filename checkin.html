@@ -196,6 +196,57 @@
     box-shadow: 0 0 0 3px rgba(184,150,12,0.1);
   }
 
+  .passport-file-hint {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.3rem;
+  }
+
+  .passport-file-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fafaf8;
+    font-size: 0.85rem;
+  }
+
+  .passport-file-preview img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  #passport-file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-light);
+  }
+
+  .passport-file-remove {
+    background: none;
+    border: none;
+    color: #9b2020;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-family: inherit;
+  }
+
+  .passport-file-error {
+    display: block;
+    font-size: 0.8rem;
+    color: #9b2020;
+    margin-top: 0.3rem;
+  }
+
   /* Rules display */
   .rules-content {
     background: #fdfcf8;
@@ -831,6 +882,17 @@
       <div class="form-group">
         <label data-i18n="ciLabelPassport">Passport Nr / N° de passeport</label>
         <input type="text" id="reg-passport" data-i18n-placeholder="ciPlaceholderPassport" placeholder="Passport number">
+      </div>
+      <div class="form-group full">
+        <label data-i18n="ciLabelPassportFile">Passport Photo / Scan (optional)</label>
+        <input type="file" id="reg-passport-file" accept="image/*,application/pdf" capture="environment">
+        <span class="passport-file-hint" data-i18n="ciPassportFileHint">Photo or PDF, max 8 MB.</span>
+        <div class="passport-file-preview" id="passport-file-preview" style="display:none;">
+          <img id="passport-file-thumb" alt="Passport preview" style="display:none;">
+          <span id="passport-file-name"></span>
+          <button type="button" class="passport-file-remove" id="passport-file-remove" data-i18n="ciPassportFileRemove">Remove</button>
+        </div>
+        <span class="passport-file-error" id="passport-file-error" style="display:none;"></span>
       </div>
       <div class="form-group">
         <label data-i18n="ciLabelDob">Date of Birth / Date de naissance</label>

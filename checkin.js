@@ -45,6 +45,99 @@ const sigImages = {};
 const sigContexts = {};
 const sigDrawing = {};
 
+// ---- Passport photo/scan upload ----
+const MAX_PASSPORT_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
+let passportFile = null; // { base64, name, type } | null
+
+function passportFileErrorMessage(key) {
+  const lang = typeof getLanguage === 'function' ? getLanguage() : 'en';
+  const t = (typeof translations !== 'undefined' && translations[lang]) || {};
+  return t[key] || {
+    ciPassportFileTooBig: 'File is too large (max 8 MB).',
+    ciPassportFileBadType: 'Please upload an image or PDF file.',
+  }[key];
+}
+
+function resetPassportFilePreview() {
+  const preview = document.getElementById('passport-file-preview');
+  const thumb = document.getElementById('passport-file-thumb');
+  const nameEl = document.getElementById('passport-file-name');
+  const errorEl = document.getElementById('passport-file-error');
+  preview.style.display = 'none';
+  thumb.style.display = 'none';
+  thumb.src = '';
+  nameEl.textContent = '';
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+}
+
+function showPassportFileError(message) {
+  const errorEl = document.getElementById('passport-file-error');
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
+}
+
+function removePassportFile() {
+  passportFile = null;
+  document.getElementById('reg-passport-file').value = '';
+  resetPassportFilePreview();
+}
+
+function handlePassportFileSelect(file) {
+  resetPassportFilePreview();
+  passportFile = null;
+
+  if (!file) return;
+
+  const isImage = file.type.startsWith('image/');
+  const isPdf = file.type === 'application/pdf';
+  if (!isImage && !isPdf) {
+    showPassportFileError(passportFileErrorMessage('ciPassportFileBadType'));
+    document.getElementById('reg-passport-file').value = '';
+    return;
+  }
+  if (file.size > MAX_PASSPORT_FILE_BYTES) {
+    showPassportFileError(passportFileErrorMessage('ciPassportFileTooBig'));
+    document.getElementById('reg-passport-file').value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    passportFile = {
+      base64: String(reader.result).split(',')[1],
+      name: file.name,
+      type: file.type,
+    };
+
+    const preview = document.getElementById('passport-file-preview');
+    const thumb = document.getElementById('passport-file-thumb');
+    const nameEl = document.getElementById('passport-file-name');
+    if (isImage) {
+      thumb.src = reader.result;
+      thumb.style.display = 'block';
+    }
+    nameEl.textContent = file.name;
+    preview.style.display = 'flex';
+  };
+  reader.onerror = () => {
+    console.error('Passport file read error:', { name: file.name });
+    showPassportFileError(passportFileErrorMessage('ciPassportFileBadType'));
+  };
+  reader.readAsDataURL(file);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const fileInput = document.getElementById('reg-passport-file');
+  const removeBtn = document.getElementById('passport-file-remove');
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => handlePassportFileSelect(e.target.files[0] || null));
+  }
+  if (removeBtn) {
+    removeBtn.addEventListener('click', removePassportFile);
+  }
+});
+
 // ---- Welcome screen → start check-in ----
 function startCheckin() {
   document.getElementById('welcome-screen').style.display = 'none';
@@ -402,11 +495,18 @@ async function submitCheckinEmail() {
   // Signatures are already embedded in the PDF; omit them from the JSON metadata.
   const { sig1, sig2, sig3, ...meta } = data;
 
+  const payload = { data: meta, pdfBase64, fileName };
+  if (passportFile) {
+    payload.passportFileBase64 = passportFile.base64;
+    payload.passportFileName = passportFile.name;
+    payload.passportFileType = passportFile.type;
+  }
+
   try {
     const resp = await fetch('/submit-checkin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: meta, pdfBase64, fileName }),
+      body: JSON.stringify(payload),
     });
 
     const result = await resp.json();
