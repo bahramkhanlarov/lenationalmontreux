@@ -1,21 +1,5 @@
 // ─── PHOTO DATA ──────────────────────────────────────────────────────────────
 const PHOTOS = [
-  // Pool
-  'photos/405948347.jpg',
-  'photos/405948357.jpg',
-  'photos/398317813.jpg',
-  'photos/398317816.jpg',
-  'photos/398317826.jpg',
-  // Spa & relaxation
-  'photos/398317838.jpg',
-  'photos/398317829.jpg',
-  'photos/398317857.jpg',
-  'photos/398317858.jpg',
-  // Fitness
-  'photos/398317849.jpg',
-  'photos/405948360.jpg',
-  'photos/398317839.jpg',
-  'photos/398317848.jpg',
   // Master bedroom
   'photos/IMG_9216.jpg',
   'photos/IMG_9217.jpg',
@@ -65,10 +49,9 @@ const PHOTOS = [
   'photos/2d333ca3-f2ea-488f-9586-9f5479396dfc.avif',
 ];
 const HERO_PHOTOS = [
-  'photos/405948347.jpg',
-  'photos/398317838.jpg',
-  'photos/398317857.jpg',
-  'photos/398317816.jpg',
+  'photos/IMG_9209.jpg',
+  'photos/IMG_9211.jpg',
+  'photos/IMG_9215.jpg',
   'photos/IMG_9208.jpg',
   'photos/IMG_9212.jpg',
 ];
