@@ -11,7 +11,9 @@ node_modules
 *.log
 
 wrangler.ci.toml
+wrangler.toml
 skills-lock.json
 FULL-AUDIT-REPORT.md
 ACTION-PLAN.md
 functions
+worker.js
