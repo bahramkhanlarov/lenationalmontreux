@@ -14,9 +14,15 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.hostname.startsWith('www.')) {
+    // Force https and the apex (non-www) hostname in a single redirect hop.
+    // Cloudflare's edge TLS termination means the Worker sees the client's
+    // original scheme in url.protocol even though the connection itself is
+    // always encrypted hop-by-hop, so this check is necessary — Cloudflare
+    // does not upgrade http -> https automatically for this zone.
+    if (url.protocol === 'http:' || url.hostname.startsWith('www.')) {
       const canonical = new URL(request.url);
-      canonical.hostname = canonical.hostname.slice(4);
+      canonical.protocol = 'https:';
+      if (canonical.hostname.startsWith('www.')) canonical.hostname = canonical.hostname.slice(4);
       return Response.redirect(canonical.toString(), 301);
     }
 
