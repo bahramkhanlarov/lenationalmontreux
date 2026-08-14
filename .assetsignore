@@ -13,3 +13,5 @@ node_modules
 wrangler.ci.toml
 skills-lock.json
 FULL-AUDIT-REPORT.md
+ACTION-PLAN.md
+functions
