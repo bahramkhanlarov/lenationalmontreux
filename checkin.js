@@ -119,6 +119,7 @@ function handlePassportFileSelect(file) {
     }
     nameEl.textContent = file.name;
     preview.style.display = 'flex';
+    document.getElementById('err-passport-file').classList.remove('show');
   };
   reader.onerror = () => {
     console.error('Passport file read error:', { name: file.name });
@@ -272,6 +273,12 @@ function validateStep(n) {
       valid = false;
     } else {
       document.getElementById('err-sig-1').classList.remove('show');
+    }
+    if (!passportFile) {
+      document.getElementById('err-passport-file').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('err-passport-file').classList.remove('show');
     }
   }
 

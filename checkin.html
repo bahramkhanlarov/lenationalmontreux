@@ -648,6 +648,23 @@
     margin-top: 1rem;
   }
 
+  .passport-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    max-width: 620px;
+    margin: 1.5rem auto 0;
+    padding: 0.9rem 1.1rem;
+    background: #fdf8ec;
+    border: 1px solid var(--gold-light);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .passport-notice .icon { font-size: 1.1rem; flex-shrink: 0; }
+
   .btn-start {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
     color: white;
@@ -826,8 +843,13 @@
       </div>
     </div>
 
+    <div class="passport-notice">
+      <span class="icon">🛂</span>
+      <span data-i18n="ciPassportNotice">Please have your passport ready — a photo or scan of it is required to complete your online check-in.</span>
+    </div>
+
     <div class="start-btn-row">
-      <button class="btn-start" data-i18n="ciStartBtn">Proceed to Check-in Documents →</button>
+      <button class="btn-start" data-i18n="ciStartBtn">Proceed to Online Check-in →</button>
     </div>
   </div>
 
@@ -885,7 +907,7 @@
         <input type="text" id="reg-passport" data-i18n-placeholder="ciPlaceholderPassport" placeholder="Passport number">
       </div>
       <div class="form-group full">
-        <label data-i18n="ciLabelPassportFile">Passport Photo / Scan (optional)</label>
+        <label data-i18n="ciLabelPassportFile">Passport Photo / Scan (required)</label>
         <input type="file" id="reg-passport-file" accept="image/*,application/pdf" capture="environment">
         <span class="passport-file-hint" data-i18n="ciPassportFileHint">Photo or PDF, max 8 MB.</span>
         <div class="passport-file-preview" id="passport-file-preview" style="display:none;">
@@ -894,6 +916,7 @@
           <button type="button" class="passport-file-remove" id="passport-file-remove" data-i18n="ciPassportFileRemove">Remove</button>
         </div>
         <span class="passport-file-error" id="passport-file-error" style="display:none;"></span>
+        <div class="error-msg" id="err-passport-file" data-i18n="ciErrPassportFile">Please upload a photo or scan of your passport to continue.</div>
       </div>
       <div class="form-group">
         <label data-i18n="ciLabelDob">Date of Birth / Date de naissance</label>

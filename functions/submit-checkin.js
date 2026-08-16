@@ -128,12 +128,12 @@ export async function handleSubmitCheckin(request, env) {
   if (!pdfBase64 || typeof pdfBase64 !== 'string') {
     return jsonResponse({ error: 'Missing PDF attachment' }, 400, corsHeaders);
   }
+  if (!passportFileBase64 || typeof passportFileBase64 !== 'string') {
+    return jsonResponse({ error: 'Missing passport photo/scan' }, 400, corsHeaders);
+  }
 
   let passportAttachment = null;
-  if (passportFileBase64 !== undefined && passportFileBase64 !== null) {
-    if (typeof passportFileBase64 !== 'string') {
-      return jsonResponse({ error: 'Invalid passport file' }, 400, corsHeaders);
-    }
+  {
     const isImage = typeof passportFileType === 'string' && passportFileType.startsWith('image/');
     const isPdf = passportFileType === 'application/pdf';
     if (!isImage && !isPdf) {
