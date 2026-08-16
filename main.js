@@ -2,14 +2,14 @@
 // Each entry pairs its file with a descriptive alt for image search/accessibility.
 const PHOTOS = [
   // Master bedroom
-  { src: 'photos/IMG_9216.avif', alt: 'Master bedroom with king-size bed' },
-  { src: 'photos/IMG_9217.avif', alt: 'Master bedroom, alternate view' },
+  { src: 'photos/IMG_9216.avif', thumb: 'photos/thumb/IMG_9216.avif', alt: 'Master bedroom with king-size bed' },
+  { src: 'photos/IMG_9217.avif', thumb: 'photos/thumb/IMG_9217.avif', alt: 'Master bedroom, alternate view' },
   // Master bathroom
   { src: 'photos/a757883b-5493-4c6f-a4b6-4fbc25678d32.avif', alt: 'Master bathroom' },
   // Second bedroom (2 single beds)
-  { src: 'photos/IMG_9218.avif', alt: 'Second bedroom with two single beds' },
-  { src: 'photos/IMG_9219.avif', alt: 'Second bedroom, alternate view' },
-  { src: 'photos/IMG_9220.avif', alt: 'Second bedroom, alternate view' },
+  { src: 'photos/IMG_9218.avif', thumb: 'photos/thumb/IMG_9218.avif', alt: 'Second bedroom with two single beds' },
+  { src: 'photos/IMG_9219.avif', thumb: 'photos/thumb/IMG_9219.avif', alt: 'Second bedroom, alternate view' },
+  { src: 'photos/IMG_9220.avif', thumb: 'photos/thumb/IMG_9220.avif', alt: 'Second bedroom, alternate view' },
   { src: 'photos/8c2336e2-4970-439f-949d-63ee645f5c9f.avif', alt: 'Second bedroom, alternate view' },
   // Second bathroom
   { src: 'photos/e614cccd-fd2e-480d-bac7-e26229f4b5cb.avif', alt: 'Second bathroom' },
@@ -17,16 +17,16 @@ const PHOTOS = [
   { src: 'photos/aa25e6c3-ee8d-41bf-98d1-d7abedee125e.avif', alt: 'Second bathroom, alternate view' },
   // Living room
   { src: 'photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif', alt: 'Living room with lake view' },
-  { src: 'photos/IMG_9208.avif', alt: 'Living room, alternate view' },
-  { src: 'photos/IMG_9209.avif', alt: 'Living room, alternate view' },
-  { src: 'photos/IMG_9211.avif', alt: 'Living room, alternate view' },
-  { src: 'photos/IMG_9212.avif', alt: 'Living room, alternate view' },
-  { src: 'photos/IMG_9215.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9208.avif', thumb: 'photos/thumb/IMG_9208.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9209.avif', thumb: 'photos/thumb/IMG_9209.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9211.avif', thumb: 'photos/thumb/IMG_9211.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9212.avif', thumb: 'photos/thumb/IMG_9212.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9215.avif', thumb: 'photos/thumb/IMG_9215.avif', alt: 'Living room, alternate view' },
   // Kitchen
-  { src: 'photos/IMG_9213.avif', alt: 'Fully equipped kitchen' },
+  { src: 'photos/IMG_9213.avif', thumb: 'photos/thumb/IMG_9213.avif', alt: 'Fully equipped kitchen' },
   { src: 'photos/87570276-90c0-43fd-8879-9bfa361cf3a2.avif', alt: 'Kitchen, alternate view' },
-  { src: 'photos/IMG_9210.avif', alt: 'Kitchen, alternate view' },
-  { src: 'photos/IMG_9214.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/IMG_9210.avif', thumb: 'photos/thumb/IMG_9210.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/IMG_9214.avif', thumb: 'photos/thumb/IMG_9214.avif', alt: 'Kitchen, alternate view' },
   { src: 'photos/a38a999d-639b-4759-9c83-3d17b485fa19.avif', alt: 'Kitchen, alternate view' },
   { src: 'photos/5dc5f17a-ceb4-4367-9c2a-cb2fad30f588.avif', alt: 'Kitchen, alternate view' },
   { src: 'photos/ebff1d62-ab46-4e25-b961-ad95607b5b86.avif', alt: 'Kitchen, alternate view' },
@@ -63,9 +63,14 @@ let showingAll = false;
 function renderGallery(all) {
   const grid = document.getElementById('galleryGrid');
   const photos = all ? PHOTOS : PHOTOS.slice(0, GALLERY_PREVIEW);
-  grid.innerHTML = photos.map((photo, i) =>
-    `<div class="gallery-item"><img class="gallery-img reveal" src="${photo.src}" alt="${photo.alt}" loading="lazy" data-lightbox-index="${i}"></div>`
-  ).join('');
+  grid.innerHTML = photos.map((photo, i) => {
+    // Grid cells are small (≤33vw desktop, 100vw mobile), so serve the
+    // lightweight thumb there when one exists and reserve the full-res
+    // file for the lightbox (see openLightbox/lbNav).
+    const gridSrc = photo.thumb || photo.src;
+    const srcset = photo.thumb ? ` srcset="${photo.thumb} 640w, ${photo.src} 2400w" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"` : '';
+    return `<div class="gallery-item"><img class="gallery-img reveal" src="${gridSrc}"${srcset} alt="${photo.alt}" loading="lazy" data-lightbox-index="${i}"></div>`;
+  }).join('');
   document.getElementById('showMoreBtn').textContent = all ? 'Show Less' : `View All ${PHOTOS.length} Photos`;
   showingAll = all;
   if (window.__revealObserver) {
