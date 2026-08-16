@@ -1,52 +1,53 @@
 // ─── PHOTO DATA ──────────────────────────────────────────────────────────────
+// Each entry pairs its file with a descriptive alt for image search/accessibility.
 const PHOTOS = [
   // Master bedroom
-  'photos/IMG_9216.jpg',
-  'photos/IMG_9217.jpg',
+  { src: 'photos/IMG_9216.avif', alt: 'Master bedroom with king-size bed' },
+  { src: 'photos/IMG_9217.avif', alt: 'Master bedroom, alternate view' },
   // Master bathroom
-  'photos/a757883b-5493-4c6f-a4b6-4fbc25678d32.avif',
+  { src: 'photos/a757883b-5493-4c6f-a4b6-4fbc25678d32.avif', alt: 'Master bathroom' },
   // Second bedroom (2 single beds)
-  'photos/IMG_9218.jpg',
-  'photos/IMG_9219.jpg',
-  'photos/IMG_9220.jpg',
-  'photos/8c2336e2-4970-439f-949d-63ee645f5c9f.avif',
+  { src: 'photos/IMG_9218.avif', alt: 'Second bedroom with two single beds' },
+  { src: 'photos/IMG_9219.avif', alt: 'Second bedroom, alternate view' },
+  { src: 'photos/IMG_9220.avif', alt: 'Second bedroom, alternate view' },
+  { src: 'photos/8c2336e2-4970-439f-949d-63ee645f5c9f.avif', alt: 'Second bedroom, alternate view' },
   // Second bathroom
-  'photos/e614cccd-fd2e-480d-bac7-e26229f4b5cb.avif',
-  'photos/80141e05-7a7d-43eb-b1f2-b5edbedcf438.avif',
-  'photos/aa25e6c3-ee8d-41bf-98d1-d7abedee125e.avif',
+  { src: 'photos/e614cccd-fd2e-480d-bac7-e26229f4b5cb.avif', alt: 'Second bathroom' },
+  { src: 'photos/80141e05-7a7d-43eb-b1f2-b5edbedcf438.avif', alt: 'Second bathroom, alternate view' },
+  { src: 'photos/aa25e6c3-ee8d-41bf-98d1-d7abedee125e.avif', alt: 'Second bathroom, alternate view' },
   // Living room
-  'photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif',
-  'photos/IMG_9208.jpg',
-  'photos/IMG_9209.jpg',
-  'photos/IMG_9211.jpg',
-  'photos/IMG_9212.jpg',
-  'photos/IMG_9215.jpg',
+  { src: 'photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif', alt: 'Living room with lake view' },
+  { src: 'photos/IMG_9208.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9209.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9211.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9212.avif', alt: 'Living room, alternate view' },
+  { src: 'photos/IMG_9215.avif', alt: 'Living room, alternate view' },
   // Kitchen
-  'photos/IMG_9213.jpg',
-  'photos/87570276-90c0-43fd-8879-9bfa361cf3a2.avif',
-  'photos/IMG_9210.jpg',
-  'photos/IMG_9214.jpg',
-  'photos/a38a999d-639b-4759-9c83-3d17b485fa19.avif',
-  'photos/5dc5f17a-ceb4-4367-9c2a-cb2fad30f588.avif',
-  'photos/ebff1d62-ab46-4e25-b961-ad95607b5b86.avif',
-  'photos/b8abd7c0-e247-4878-b593-8dd89c6a2ea2.webp',
+  { src: 'photos/IMG_9213.avif', alt: 'Fully equipped kitchen' },
+  { src: 'photos/87570276-90c0-43fd-8879-9bfa361cf3a2.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/IMG_9210.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/IMG_9214.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/a38a999d-639b-4759-9c83-3d17b485fa19.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/5dc5f17a-ceb4-4367-9c2a-cb2fad30f588.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/ebff1d62-ab46-4e25-b961-ad95607b5b86.avif', alt: 'Kitchen, alternate view' },
+  { src: 'photos/b8abd7c0-e247-4878-b593-8dd89c6a2ea2.webp', alt: 'Kitchen, alternate view' },
   // Terrace
-  'photos/8e79966c-5594-4d31-b084-762bd4c7e997.avif',
-  'photos/ddcf5019-f196-4ebd-b234-534494963283.avif',
-  'photos/cf2f6edc-3836-456d-84c6-5b9d679cffb7.avif',
+  { src: 'photos/8e79966c-5594-4d31-b084-762bd4c7e997.avif', alt: 'Private terrace with lake and mountain views' },
+  { src: 'photos/ddcf5019-f196-4ebd-b234-534494963283.avif', alt: 'Terrace, alternate view' },
+  { src: 'photos/cf2f6edc-3836-456d-84c6-5b9d679cffb7.avif', alt: 'Terrace, alternate view' },
   // Garage
-  'photos/1545e924-4c42-4928-a065-f825770b7fae.avif',
-  'photos/ac6535af-58b3-4b28-92d8-f8b07d72775d.avif',
-  'photos/5dad69d9-a89e-46be-ad50-143511b55c95.avif',
+  { src: 'photos/1545e924-4c42-4928-a065-f825770b7fae.avif', alt: 'Private garage parking' },
+  { src: 'photos/ac6535af-58b3-4b28-92d8-f8b07d72775d.avif', alt: 'Garage, alternate view' },
+  { src: 'photos/5dad69d9-a89e-46be-ad50-143511b55c95.avif', alt: 'Garage, alternate view' },
   // Building exterior & surroundings
-  'photos/00766406-822d-4e20-a133-222af49cc3c7.avif',
-  'photos/6d5efffb-c0ca-431e-adfb-1129b2b96f8c.avif',
-  'photos/ab63dcd0-d4c2-40a4-b178-51f2103160e2.avif',
-  'photos/aef194ad-bcc7-4f3a-a235-9aa1026f83ee.avif',
-  'photos/cfcc53e9-7b25-41be-b340-0e5a2769c1d0.avif',
-  'photos/ead8a423-669a-41e5-9002-208b96a1f304.avif',
+  { src: 'photos/00766406-822d-4e20-a133-222af49cc3c7.avif', alt: 'Building exterior, Le National Montreux' },
+  { src: 'photos/6d5efffb-c0ca-431e-adfb-1129b2b96f8c.avif', alt: 'Building exterior, alternate view' },
+  { src: 'photos/ab63dcd0-d4c2-40a4-b178-51f2103160e2.avif', alt: 'Surroundings near the property' },
+  { src: 'photos/aef194ad-bcc7-4f3a-a235-9aa1026f83ee.avif', alt: 'Surroundings, alternate view' },
+  { src: 'photos/cfcc53e9-7b25-41be-b340-0e5a2769c1d0.avif', alt: 'Surroundings, alternate view' },
+  { src: 'photos/ead8a423-669a-41e5-9002-208b96a1f304.avif', alt: 'Surroundings, alternate view' },
   // Floor plan
-  'photos/2d333ca3-f2ea-488f-9586-9f5479396dfc.avif',
+  { src: 'photos/2d333ca3-f2ea-488f-9586-9f5479396dfc.avif', alt: 'Apartment floor plan' },
 ];
 const HERO_PHOTOS = [
   'photos/d43316e3-8939-48af-bf3d-95b0e416e912.avif',
@@ -62,8 +63,8 @@ let showingAll = false;
 function renderGallery(all) {
   const grid = document.getElementById('galleryGrid');
   const photos = all ? PHOTOS : PHOTOS.slice(0, GALLERY_PREVIEW);
-  grid.innerHTML = photos.map((url, i) =>
-    `<div class="gallery-item"><img class="gallery-img reveal" src="${url}" alt="Apartment photo ${i + 1}" loading="lazy" data-lightbox-index="${i}"></div>`
+  grid.innerHTML = photos.map((photo, i) =>
+    `<div class="gallery-item"><img class="gallery-img reveal" src="${photo.src}" alt="${photo.alt}" loading="lazy" data-lightbox-index="${i}"></div>`
   ).join('');
   document.getElementById('showMoreBtn').textContent = all ? 'Show Less' : `View All ${PHOTOS.length} Photos`;
   showingAll = all;
@@ -77,7 +78,8 @@ function showAllPhotos() { renderGallery(!showingAll); }
 let lbIndex = 0;
 function openLightbox(i) {
   lbIndex = i;
-  document.getElementById('lbImg').src = PHOTOS[i];
+  document.getElementById('lbImg').src = PHOTOS[i].src;
+  document.getElementById('lbImg').alt = PHOTOS[i].alt;
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -87,7 +89,8 @@ function closeLightbox() {
 }
 function lbNav(dir) {
   lbIndex = (lbIndex + dir + PHOTOS.length) % PHOTOS.length;
-  document.getElementById('lbImg').src = PHOTOS[lbIndex];
+  document.getElementById('lbImg').src = PHOTOS[lbIndex].src;
+  document.getElementById('lbImg').alt = PHOTOS[lbIndex].alt;
 }
 document.getElementById('lightbox').addEventListener('click', function (e) {
   if (e.target === this) closeLightbox();
