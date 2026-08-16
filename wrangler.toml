@@ -17,3 +17,4 @@ id = "e3efa7ca0a6e432eaa2cda79c633c79d"
 directory = "."
 binding = "ASSETS"
 not_found_handling = "single-page-application"
+run_worker_first = true
