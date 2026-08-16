@@ -1,0 +1,21 @@
+# Le National Montreux
+
+> Luxury apartment in the heart of Montreux, Switzerland, steps from Lake Geneva. Sleeps up to 8 guests across 2 bedrooms, with lake and mountain views, a private terrace, and garage parking. Popular for the Montreux Jazz Festival and Lake Geneva/Swiss Riviera travel.
+
+## Key facts
+
+- Location: Avenue du Casino 10, 1820 Montreux, Vaud, Switzerland
+- Capacity: up to 8 guests, 2 bedrooms (1 king, 2 singles), 2 bathrooms
+- Check-in: 15:00, Check-out: 11:00
+- Minimum stay: 3 nights
+- Cancellation: free up to 14 days before check-in
+- Rate: CHF 480-650 per night depending on season, plus CHF 150 cleaning fee and CHF 6/adult/night city tax
+- Amenities: full kitchen, high-speed WiFi, smart TV, washer/dryer, AC & heating, private terrace, premium linens, keyless entry, private garage parking, baby cot available
+- Pets: not allowed
+- Nearby: Lake Geneva promenade (3 min walk), Jazz Festival venues (5 min walk), Montreux train station (8 min walk), Château de Chillon (15 min by train), Geneva Airport (55 min by train)
+- Booking: instant booking via Stripe Checkout at https://lenationalmontreux.ch/#booking
+- Guest rating: 4.9/5 on Airbnb
+
+## Pages
+
+- [Homepage](https://lenationalmontreux.ch/): full listing details, photo gallery, availability calendar, and booking
